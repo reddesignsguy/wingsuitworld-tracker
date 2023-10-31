@@ -1,0 +1,125 @@
+.playerPage{
+    /* padding: 0vw 10vw 0vw 10vw; */
+    /* min() is good for setting responsive PAGE margins
+    - Using a percetange creates responsiveness for any type of smaller screen
+    - Using an absolute number is for when the percentage of the page would make the content too big
+    */
+    
+    width: min(90%, 80.5rem); 
+    margin: auto;
+}
+.grid {
+    display: flex;
+    flex-direction: row;
+    /* grid-template-columns: 2fr 1fr; */
+    gap: 1rem;
+}
+
+.container {
+    border: 4px solid var(--primary);
+    border-radius: 20px;
+    background-color: var(--dark-gray);
+    margin: 10px;
+}
+
+.container.maps{
+    width: 100%;
+    height: 50px; 
+}
+
+
+.container.avatar img {
+    width: 100%;
+}
+
+.container__avatar__score-titles {
+    display: flex;
+    justify-content:space-around;
+    padding: 0.3rem 0.5rem;
+     background-color: var(--primary);
+     font-family: 'built-titling';
+     font-size: 1.3rem;
+     color: var(--bright);
+}
+
+.container__avatar__scores {
+    display: flex;
+    justify-content: space-around;
+    padding: 1rem 0.5rem;
+    color: var(--bright);
+}
+
+.container__avatar__scores span {
+    width: 100%;
+    font-size: 1.5rem;
+    padding: 0.5rem;
+    filter: drop-shadow(0px 6px 8px var(--primary));
+}
+
+.container__avatar__score-titles span {
+    width: 100%;
+}
+
+.intro {
+    margin: auto;
+    padding: 1rem;
+}
+
+.intro__background__1 { 
+    width: 100%;
+    height: 28rem;
+    filter: drop-shadow(0 0 8px var(--primary))
+}
+
+@media (max-width: 1055px) {
+    
+    .intro__background__1 {
+        height: 42vw;
+        width: 49.9vw;
+    }
+}
+
+@media (max-width: 970px) {
+    
+    .container__avatar__score-titles span {
+        font-size:1rem;
+    }
+
+    .container__avatar__scores span {
+        font-size:1.2rem;
+    }
+}
+
+
+
+/* Mobile devices: Starting with big */
+@media (max-width: 720px) {
+    
+    .grid {
+       flex-direction: column;
+    }
+}
+
+/* 
+1. Problems with LONG descendant selector chains
+
+1. Specificity Issues (selectors can overlap), resulting in need for more specificty, rabbit hole
+2. Fragile, Tightly coupled to HTML, not scalable, modular
+3. Not reusable -> monolithic CSS, not scalable
+
+Method to using subclasses:
+- HTML: Set class name to "superclass subclass sub-subclass..."
+- CSS: Set selector name to ".superclass" and ".superclass.subclass" respectively
+
+*/
+
+/* 
+1. Flex-shrink: Decreases flex items size by a proportionate amt.
+ - Explicitly setting 3 items' width to 300, 600, and 300 px would make the container width 1200px
+- If the page width is 600px, flex-shrink will divide the widths of the flex items by 2
+- So we get 150, 300, and 150px
+
+*/
+
+/* Shorthands: CSS statements that do the work of multiple css statements*/
+

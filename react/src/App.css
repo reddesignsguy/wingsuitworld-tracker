@@ -1,7 +1,6 @@
 .App {
   text-align: center;
   height: 100%;
-  background-color: red;
 }
 
 .App-logo {
@@ -39,6 +38,15 @@
   }
 }
 
+html {
+  background-color: var(--gray);
+}
+
 .pageContainer{
   height: 100%;
+}
+
+.gradient {
+  height: 100px;
+  background-image: linear-gradient(0deg, rgba(255, 255, 255, 0), var(--dark-gray))
 }

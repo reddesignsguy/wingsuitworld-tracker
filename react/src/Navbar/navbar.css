@@ -16,6 +16,9 @@
     padding: 0 2rem;
     position: sticky;
     top: 0;
+    z-index: 2;
+    font-family: 'built-titling';
+    letter-spacing: 0.03rem;
 }
 
 /* Instead of making a new class from ul and a, index it, especially if it's only used once*/
@@ -24,8 +27,13 @@
     margin: 0;
     list-style: none;
     display: flex;
-    gap: 2rem;
 }
+
+.nav li a {
+    margin-right: 2rem;
+    justify-content: center;
+}
+
 
 .nav a {
     color: inherit;
@@ -34,15 +42,24 @@
     display: flex;
     height: 100%;
     align-items: center;
+    transition: transform 0.4s, filter 0.4s;
+    filter: drop-shadow(0px 0px 0rem var(--primary));
 }
 
-.nav li.active {
-    color: orange;
-}
 
-.nav a:hover {
+.nav a.inactive:hover {
     color: var(--primary);
-    filter: drop-shadow(16px 16px --primary);
+    transform: translateY(-2px);
+}
+
+.nav a.inactive {
+    color: var(--bright);
+}
+
+.nav a.active {
+    color: orange;
+    background-color: var(--dark-gray);
+    cursor: default;
 }
 
 .nav li img {
@@ -53,6 +70,7 @@
     width: 10rem;
     cursor: pointer;
 }
+
 
 .picture_container {
     align-self: center;
@@ -65,4 +83,99 @@
 
 .site-title {
     font-size: 1.5rem;
+}
+
+.dropdown-menu {
+    background-color: var(--dark-gray);
+    color: var(--bright);
+    width: 14rem;
+    padding: 1rem;
+    margin: 1rem;
+    border-radius: 0.5rem;
+    position: absolute;
+    right: 0rem;
+    top: 3.5rem;
+    text-align: center;
+    cursor: default;
+    z-index: 1;
+    
+    filter: drop-shadow(0 0 0.3rem var(--gray));
+    transition: transform 0.3s, opacity 0.3s;
+}
+
+.dropdown-menu.active {
+    transform: translateY(0);
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Doing just dropdown menu overrides the active subclass */
+.dropdown-menu.inactive {
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-1rem);
+}
+
+.dropdown-menu h2 {
+    font-size: 1.8rem;
+    margin: 0px;
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    display: block;
+    padding: 0.5rem;
+    margin-top: 1rem;
+}
+
+.dropdown-menu li {
+    margin-top: 1rem;
+    padding: 0px 10px 0px 10px;
+}
+
+/* NavLink are converted to an "a" tag, so this targets navlinks*/
+.dropdown-menu a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    transition: transform 0.4s;
+}
+
+/* Adjust a property for all children of parent*/
+.dropdown-menu a > * {
+    margin-right: 0.5rem;
+}
+
+.dropdown-menu a:hover {
+    text-decoration: none;
+    color: var(--primary);
+    transform:translateX(5px)
+}
+
+.dropdown-menu hr {
+    width: 10rem;
+}
+
+.info {
+    border-color: var(--bright);
+    padding: 8px;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    font-family: 'built-titling';
+    
+}
+
+.info h2 {
+    font-size: 3rem;
+}
+.info span {
+    font-size: 1.3rem;
+}
+
+/* Mobile devices: Starting with big */
+@media (max-width: 720px) {
+    
+    .grid {
+       flex-direction: column;
+    }
 }

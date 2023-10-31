@@ -9,6 +9,7 @@ function App() {
   return (
     <div className="App">
       <Navbar/>
+      <div className="gradient"></div>
       <div className="pageContainer">
         <Routes>
           <Route path="/" element={<Home/>}/>

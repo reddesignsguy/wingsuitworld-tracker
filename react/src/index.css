@@ -1,9 +1,14 @@
 :root {
   --primary: #FF922D;
-  --light-gray: 545454;
-  --gray: #252525;
-  --dark-gray: #171717;
-  --white: #FFFFFF;
+  --light-gray: #545454;
+  --gray: #101010;
+  --dark-gray: #050505;
+  --bright: #e8e1d1;
+}
+
+@font-face {
+  font-family: 'built-titling';
+  src: url('fonts/built_titling.otf');
 }
 
 body {
