@@ -1,22 +1,23 @@
-.playerPage{
+.content{
     /* padding: 0vw 10vw 0vw 10vw; */
     /* min() is good for setting responsive PAGE margins
     - Using a percetange creates responsiveness for any type of smaller screen
     - Using an absolute number is for when the percentage of the page would make the content too big
     */
     
-    width: min(90%, 80.5rem); 
+    width: min(90%, 60.5rem); 
     margin: auto;
+    letter-spacing: 0.03rem;
 }
 .grid {
     display: flex;
+    transition: ease all 0.5s;
     flex-direction: row;
-    /* grid-template-columns: 2fr 1fr; */
     gap: 1rem;
 }
 
 .container {
-    border: 4px solid var(--primary);
+    border: 2px solid var(--primary);
     border-radius: 20px;
     background-color: var(--dark-gray);
     margin: 10px;
@@ -24,11 +25,11 @@
 
 .container.maps{
     width: 100%;
-    height: 50px; 
 }
 
 
 .container.avatar img {
+    max-width: 352px;
     width: 100%;
 }
 
@@ -61,23 +62,143 @@
 }
 
 .intro {
+    position: relative;
     margin: auto;
     padding: 1rem;
 }
 
 .intro__background__1 { 
     width: 100%;
-    height: 28rem;
+    height: 100%;
     filter: drop-shadow(0 0 8px var(--primary))
 }
 
-@media (max-width: 1055px) {
+
+.intro__text {
+    display: grid;
+    position: absolute;
+    transition: ease all 0.5s;
     
-    .intro__background__1 {
-        height: 42vw;
-        width: 49.9vw;
+    top: 7.5rem;
+    left: 3rem;
+    z-index: 2;
+}
+
+.intro__title {
+    font-size: 12rem;
+    font-family: 'built-titling';
+    transition: ease font-size 0.5s;
+    z-index: 2;
+    color: white;
+    justify-self:end;
+    line-height: 8.5rem;
+}
+
+.intro__rank {
+    color: var(--primary);
+    font-family: 'built-titling';
+    transition: ease font-size 0.5s;
+    font-size: 3rem;
+    z-index: 2;
+    justify-self: right;
+}
+
+.maps__title {
+    background-color: var(--primary);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+    font-family: 'built-titling';
+    color: white;
+    font-size: 1.3rem;
+    padding: 0.3rem;
+}
+
+/* Responsive Design
+- minmax: Provides a range of values between a min and max, min is fixed, max is relative-> Continuous sizing
+- auto-fill: Fills as many columns as possible, including implicit column space if needed
+- auto-fit: Fit the non-empty and explictly available columns into remaining space AFTER auto-fill is done and the implicit columns are removed
+
+*/
+.maps__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit ,minmax(200px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.map__container {
+    display: grid;
+    gap: 0.5rem;
+    justify-items: center;
+    flex-direction: column;
+    background-color: var(--gray);
+    border-radius: 20px;
+    padding-top: 0.5rem;
+    color: white;
+}
+
+
+.map__container img {
+    border-radius: 15px;
+    height: 12rem;
+}
+
+.map__container__title{
+    font-weight: bolder;
+    font-size: 1.3rem;
+}
+
+.map__container__code{
+    font-weight: bolder;
+    font-size: 1.3rem;
+    background-color: var(--primary);
+    border-bottom-left-radius: 15px;
+    border-bottom-right-radius: 15px;
+    width: 100%;
+    padding: 0.3rem;
+}
+
+.background-picture {
+    position: fixed;
+    top: 0px;
+    left:0px;
+    opacity: 20%;
+    width: 140vw;
+    padding-bottom: 100vh;
+    z-index: -1;
+    filter: blur(3px)
+}
+
+@media (max-width: 620px) {
+    
+    /* .intro__container__title {
+        font-size: 30vw;
+    } */
+
+    .intro__text {
+        top: 20vw;
+    }
+    .intro__title {
+        
+        font-size: 28vw;
+        line-height: 22vw;
+    }
+
+    .intro__rank {
+        font-size: 7.6vw;
+    }
+    
+    .intro {
+        height: 73vw;
     }
 }
+
+/* @media (max-width: 950px) {
+    
+    .grid{
+        font-size:1rem;
+    }
+} */
 
 @media (max-width: 970px) {
     
@@ -90,11 +211,8 @@
     }
 }
 
-
-
 /* Mobile devices: Starting with big */
-@media (max-width: 720px) {
-    
+@media (max-width: 1065px) {
     .grid {
        flex-direction: column;
     }

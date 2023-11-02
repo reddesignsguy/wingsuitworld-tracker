@@ -1,6 +1,6 @@
 import "./navbar.css";
 import { NavLink } from "react-router-dom";
-import { IoSettingsOutline, IoLogOut } from "react-icons/io5";
+import { IoSettingsOutline, IoLogOut, IoMenu } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
 
 export default function Navbar() {
@@ -15,7 +15,7 @@ export default function Navbar() {
     let handler = (e) => {
       if (!open) return;
 
-      // If clicking on picture to close, then let the onClick from the picture do the job, and not this
+      // If clicking on picture in order to close, then let the onClick from the picture do the job, and not this
       // @ts-ignore
       if (picRef.current.contains(e.target)) return;
 
@@ -67,7 +67,10 @@ export default function Navbar() {
       <nav className="nav">
         <h1 className="site-title">WingsuitWorld</h1>
         <ul>
-          <li>
+          <li className="nav_mobile">
+            <IoMenu />
+          </li>
+          <li className="nav_desktop">
             <NavLink
               to="/"
               className={({ isActive }) => (isActive ? "active" : "inactive")}
@@ -75,7 +78,7 @@ export default function Navbar() {
               Home
             </NavLink>
           </li>
-          <li>
+          <li className="nav_desktop">
             <NavLink
               to="/leaderboards"
               className={({ isActive }) => (isActive ? "active" : "inactive")}
@@ -83,7 +86,7 @@ export default function Navbar() {
               Leaderboards
             </NavLink>
           </li>
-          <li>
+          <li className="nav_desktop">
             <NavLink
               to="/player"
               className={({ isActive }) => (isActive ? "active" : "inactive")}
@@ -116,7 +119,6 @@ export default function Navbar() {
             text="Logout"
             link="/logout"
           ></DropdownItem>
-          <LoggedInComponent loggedIn={loggedIn} />
         </ul>
       </section>
     </>
