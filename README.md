@@ -1,5 +1,9 @@
 # wingsuitworld-tracker
 
+System Design
+
+<img width="919" alt="image" src="https://github.com/reddesignsguy/wingsuitworld-tracker/assets/49921782/6f2d50d7-8df9-438e-bb3c-8c38180049be">
+
 - mobile first
 - useReact
 - useState
