@@ -2,10 +2,13 @@ import "./navbar.css";
 import { NavLink } from "react-router-dom";
 import { IoSettingsOutline, IoLogOut, IoMenu } from "react-icons/io5";
 import { useState, useEffect, useRef } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
+  // TODO: Move around auth0 vars like logout
+  const { user, isAuthenticated, isLoading, logout } = useAuth0();
 
   const menuRef = useRef(); // Attach this ref to the attreibute of dropdown menu on screen (For detecting clicks "outside" to turn off menu)
   const picRef = useRef();
@@ -29,7 +32,9 @@ export default function Navbar() {
   });
 
   function LoggedInComponent(props) {
+    const { loginWithRedirect } = useAuth0();
     let component;
+    // Show logged in state
     if (props.loggedIn) {
       component = (
         <li className="picture_container" ref={picRef}>
@@ -42,25 +47,21 @@ export default function Navbar() {
           ></img>
         </li>
       );
-    } else {
+    }
+    // Show Login button
+    else {
       component = (
         <li>
-          <NavLink
-            to="/register"
-            className="inactive"
-            onClick={() => {
-              setLoggedIn(true);
-            }}
-          >
-            <span>Login</span>
-          </NavLink>
+          <a className="inactive" onClick={() => loginWithRedirect()}>
+            Login
+          </a>
         </li>
       );
     }
     return component;
   }
 
-  return (
+  return !isLoading ? (
     <>
       <link href="https://css.gg/css" rel="stylesheet" />{" "}
       {/* TODO: Import only necessary icons */}
@@ -95,7 +96,7 @@ export default function Navbar() {
             </NavLink>
           </li>
           {/* TODO: Modify hard-coded picture */}
-          <LoggedInComponent loggedIn={loggedIn} />
+          <LoggedInComponent loggedIn={isAuthenticated} />
         </ul>
       </nav>
       <section
@@ -117,21 +118,28 @@ export default function Navbar() {
           <DropdownItem
             icon={<IoLogOut size="1.3rem" />}
             text="Logout"
-            link="/logout"
+            onClick={() => logout()}
           ></DropdownItem>
         </ul>
       </section>
     </>
-  );
+  ) : null;
 }
 
 function DropdownItem(props) {
   return (
     <li>
-      <NavLink to={props.link}>
-        {props.icon}
-        <span> {props.text}</span>
-      </NavLink>
+      {props.onClick ? (
+        <a onClick={props.onClick}>
+          {props.icon}
+          <span> {props.text}</span>
+        </a>
+      ) : (
+        <NavLink to={props.link}>
+          {props.icon}
+          <span> {props.text}</span>
+        </NavLink>
+      )}
     </li>
   );
 }
