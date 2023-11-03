@@ -27,7 +27,7 @@ SVG pain
 The font-size and positioning had to be adjusted responsively. The responsiveness for the two texts was originally handled separately, which added unnecessary complexity. The solution was to use a grid that would essentially bind the two texts together (to the best that grid can). With this, I essentially could focus on handling the responsiveness for one class, i.e: the grid, PLUS I wouldn't have to worry about making sure that the texts were close to each other as the screen got smaller. There were a few nuances like adjusting the responsiveness of the line height, but other than that, the intro section is now responsive.
 
 The results:
-[![Image from Gyazo](https://i.gyazo.com/862f3b793a8a2864ce2dad0bcb47298d.gif)](https://gyazo.com/862f3b793a8a2864ce2dad0bcb47298d) 
-
+[![test](https://i.gyazo.com/862f3b793a8a2864ce2dad0bcb47298d.gif)](https://gyazo.com/862f3b793a8a2864ce2dad0bcb47298d) 
+https://i.gyazo.com/862f3b793a8a2864ce2dad0bcb47298d.gif)](https://gyazo.com/862f3b793a8a2864ce2dad0bcb47298d 
 
 -  Responsive grid for maps without using media queries -> the columns are calculated using repeat(auto-fit, minmax(200px, (some_value)vh)
