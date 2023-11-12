@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, NavLink } from "react-router-dom";
 import { IoSearchSharp } from "react-icons/io5";
+import { useAuth0 } from "@auth0/auth0-react";
 // @ts-ignore
 import background_video from "../../media/videos/background_video.mp4";
 import "./Home.css";
@@ -9,6 +10,7 @@ export default function Home() {
   // Can only use react hooks within components/classes
   const [input, setInput] = useState("");
   const [autocomplete, setAutocomplete] = useState([]);
+  const { isAuthenticated, user } = useAuth0();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +26,7 @@ export default function Home() {
       <section className="homePage">
         <section className="homePage_middle">
           <h2>
-            <i>FIND YOUR WINGSUIT WORLD STATS </i>
+            <i>FIND YOUR STATS </i>
           </h2>
           <section className="search_container">
             <input
@@ -37,7 +39,7 @@ export default function Home() {
               // User searches with ENTER key
               onKeyUp={(e) => {
                 if (e.key == "Enter") {
-                  navigate(`/player?${input}`);
+                  navigate(`/player/${input}`);
                 }
               }}
             ></input>

@@ -8,7 +8,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   // const [loggedIn, setLoggedIn] = useState(false);
   // TODO: Move around auth0 vars like logout
-  const { user, isAuthenticated, isLoading, logout } = useAuth0();
+  const { isAuthenticated, isLoading, logout } = useAuth0();
 
   const menuRef = useRef(); // Attach this ref to the attreibute of dropdown menu on screen (For detecting clicks "outside" to turn off menu)
   const picRef = useRef();
@@ -66,7 +66,7 @@ export default function Navbar() {
       <link href="https://css.gg/css" rel="stylesheet" />{" "}
       {/* TODO: Import only necessary icons */}
       <nav className="nav">
-        <h1 className="site-title">WingsuitWorld</h1>
+        <h1 className="site-title">Coming soon :D</h1>
         <ul>
           <li className="nav_mobile">
             <IoMenu />
