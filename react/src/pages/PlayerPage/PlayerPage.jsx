@@ -1,46 +1,45 @@
 import "./PlayerPage.css";
 // @ts-ignore
 import intro__background__1 from "../../media/vectors/player-page__intro__background.svg";
-
-/* Dummy Data */
-const dummyMaps = [
-  {
-    title: "City Parkour",
-    plays: "921",
-    img: "https://tr.rbxcdn.com/36614e9167f2da136af82915edcfa46e/150/150/Image/Png",
-    code: "cityp#1234",
-  },
-  {
-    title: "Xtreme Airsports",
-    plays: "3499",
-    img: "https://tr.rbxcdn.com/cd4f1816027963266dd06117b003e868/150/150/Image/Png",
-    code: "xtremee#4942",
-  },
-  {
-    title: "City Parkour",
-    plays: "921",
-    img: "https://tr.rbxcdn.com/36614e9167f2da136af82915edcfa46e/150/150/Image/Png",
-    code: "cityp#1234",
-  },
-  {
-    title: "Xtreme Airsports",
-    plays: "3499",
-    img: "https://tr.rbxcdn.com/cd4f1816027963266dd06117b003e868/150/150/Image/Png",
-    code: "xtremee#4942",
-  },
-  {
-    title: "City Parkour",
-    plays: "921",
-    img: "https://tr.rbxcdn.com/36614e9167f2da136af82915edcfa46e/150/150/Image/Png",
-    code: "cityp#1234",
-  },
-];
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 
 export default function PlayerPage() {
-  const topScore = `${1129}sp`;
-  const totalScore = `${4949}sp`;
-  const name = "Vexeo";
-  const rank = `Rank#1`;
+  const [[name, rank, img, topScore, totalScore, maps], setPlayer] = useState([
+    null,
+    null,
+    null,
+    null,
+    null,
+    [
+      {
+        title: "shouldn't be appearing",
+        plays: 69696969,
+        img: "https://tr.rbxcdn.com/36614e9167f2da136af82915edcfa46e/150/150/Image/Png",
+        code: "shouldnt be appearing",
+      },
+    ],
+  ]);
+
+  const { playername } = useParams();
+
+  useEffect(() => {
+    const fetchPlayerData = async () => {
+      const data = await fetch(`http://localhost:5051/player/${playername}`);
+      data.json().then((json) => {
+        setPlayer([
+          json.name,
+          `Rank#${json.rank}`,
+          json.img,
+          json.topScore,
+          json.totalScore,
+          json.maps,
+        ]);
+      });
+    };
+
+    fetchPlayerData();
+  }, []);
 
   return (
     <section className="player-page">
@@ -59,7 +58,7 @@ export default function PlayerPage() {
             ></img>
           </section>
           <section className="container avatar">
-            <img src='https://tr.rbxcdn.com/15DAY-Avatar-BC8E5946272E2104B2C0935DEA4D020D-Png/352/352/Avatar/Png/noFilter"'></img>
+            <img src={img}></img>
             <section className="container__avatar__score-titles">
               <span>Top Score</span>
               <span>Total Score</span>
@@ -72,16 +71,16 @@ export default function PlayerPage() {
         </section>
         <section className="container maps">
           <section className="maps__title">
-            <span> Vexeo's Maps </span>
+            <span> {`${name}'s Maps`} </span>
           </section>
           <section className="maps__grid">
-            <Maps items={dummyMaps} />
+            <Maps items={maps} />
           </section>
         </section>
       </section>
       <img
         className="background-picture"
-        src="https://lordsofgaming.net/wp-content/uploads/2021/11/Riders_Republic%E2%84%A2_rocket_flying-1024x576.png"
+        src="https://static.fanbyte.com/uploads/2021/11/Riders-Republic-110221-Shot-04.jpg"
       ></img>
     </section>
   );
@@ -91,7 +90,7 @@ function Maps(props) {
   return (
     <>
       {props.items.map((item) => (
-        <SingleMap
+        <Map
           title={item.title}
           plays={item.plays}
           img={item.img}
@@ -100,10 +99,9 @@ function Maps(props) {
       ))}
     </>
   );
-  /* Load maps from props here */
 }
 
-function SingleMap(props) {
+function Map(props) {
   return (
     <section className="map__container">
       <span className="map__container__title"> {props.title} </span>
