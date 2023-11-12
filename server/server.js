@@ -5,11 +5,13 @@ const cors = require('cors'); // Allows switching from dot.env to process.env //
 
 const app = express();
 const PORT = process.env.PORT || 5051;
-const players = require('./players.js')
+const players = require('./players.js');
+const users = require('./users.js');
 
 app.use(cors());
+app.use(express.json())
 app.use('/player', players);
-// app.use("/wingsuit-simulator", wingsuitSimulator)
+app.use('/user', users);
 
 app.listen(PORT, () => {
     console.log("Running on port:", PORT);
