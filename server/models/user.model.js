@@ -16,43 +16,50 @@ const connection = mysql.createConnection({
 
 connection.connect();
 
+// * Model promises either a success or failure, the logic is decided here
 User.getById = async function(userId) {
     if (connection.state === 'disconnected') {
         return respond(null, {status: 'fail', message: 'failed to connect to db'});
     };
     
     const query = `SELECT * FROM users WHERE userId = '${userId}' LIMIT 1`;
-    connection.query(query, (err, rows) => {
-        if (err) return err;
-
-        if (rows.length == 0) {
-            return JSON.stringify(null);
+    return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
+        if (err) {
+            reject({status_code: 500, message: "Server failed to find user"})
+            return;
         }
-         else {
-            return rows;
-         }
-    });
+
+        if (rows?.length == 0) {
+            reject({status_code: 404, message: "User does not exist"})
+            return;
+        }
+
+        resolve(rows);
+    }));
 }
 
 // ! When User schema grows, consider a POST function that replaces all columns, i.e: This function would turn into User.create
-User.createById = async function(user) {
+User.create = async function(user) {
     if (connection.state === 'disconnected') {
         return respond(null, {status: 'fail', message: 'failed to connect to db'});
     }
     
     const query = `INSERT INTO users (userId)
                     VALUES ('${user.userId}')`;
-    // TODO: 0 Rows are returned even on successful POST
-    connection.query(query, (err, rows) => {
-        if (err) return err;
-
-        if (rows.length == 0) {
-            return JSON.stringify(null);
+    return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
+        if (err?.errno === 1062) {
+             reject({status_code: 410, message: "User already exists"})
+             return;
         }
-         else {
-            return JSON.stringify(rows);
-         }
-    });
+
+        // TODO: Consider handling other errors that come with SET
+        if (err) {
+            reject({status_code: 500, message: "Server failed to create user"});
+            return;
+        }
+
+        resolve(user);
+    }));
 }
 
 User.removeById = async function(userId) {
@@ -62,16 +69,22 @@ User.removeById = async function(userId) {
 
     const query = `DELETE FROM users 
                     WHERE userId = '${userId}'`;
-    connection.query(query, (err, rows) => {
-        if (err) return err;
-
-        if (rows.length == 0) {
-            return JSON.stringify(null);
+    return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
+        if (err) { 
+            reject({status_code: 500, message: "Server failed to find user"})
+            return;
         }
-         else {
-            return JSON.stringify(rows.info);
-         }
-    });
+        
+        if (rows?.affectedRows == 0) {
+            reject({
+                status_code: 404,
+                message: "User not removed.. user may not exist"});
+            return;
+        }
+
+        
+        resolve(`${userId} was removed`);
+    }));
 }
 
 
@@ -79,22 +92,30 @@ User.update = async function (user){
     if (connection.state === 'disconnected') {
         return respond(null, {status: 'fail', message: 'failed to connect to db'});
     }
-    // ! This query builder is modular and works for any patch or put request
+
     const query = buildUserPatchQuery(user);
-    return new Promise((resolve) => connection.query(query, (err, rows) => {
+    return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
+        
         if (err) {
-            resolve(err); 
+            // console.log(err);
+            reject({status_code: 500, message: "Server failed to update playerName of user"}); 
             return;
         };
 
-        if (rows.affectedRows == 0 ) {
-            resolve("Could not find provided user id");
-        } else if (rows.changedRows == 0) {
-            resolve("The data of the user of the provided userId not changed");
+        if (rows?.affectedRows == 0) {
+            reject({
+                status_code: 404,
+                message: "Could not find provided user id"});
+            return; 
         }
-         else {
-            resolve(user);
-         }
+        
+        if (rows?.changedRows == 0) {
+            reject({
+                status_code: 404,
+                message: "The user specified may already contain the data provided"});
+            return;
+        }
+        resolve(user);
     }));
 }
 
