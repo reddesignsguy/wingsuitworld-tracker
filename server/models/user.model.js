@@ -1,4 +1,5 @@
 const {buildUserPatchQuery} = require("../helpers/queryBuilders");
+const {response} = require("../helpers/errorHandlers");
 const mysql = require("mysql2")
 // * Constructor
 const User = function(user) {
@@ -25,16 +26,16 @@ User.getById = async function(userId) {
     const query = `SELECT * FROM users WHERE userId = '${userId}' LIMIT 1`;
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         if (err) {
-            reject({status_code: 500, message: "Server failed to find user"})
+            reject(response(500, "Server failed to find user"))
             return;
         }
 
         if (rows?.length == 0) {
-            reject({status_code: 404, message: "User does not exist"})
+            reject(response(404, "User does not exist"));
             return;
         }
 
-        resolve(rows);
+        resolve(response(200, rows[0]));
     }));
 }
 
@@ -48,17 +49,17 @@ User.create = async function(user) {
                     VALUES ('${user.userId}')`;
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         if (err?.errno === 1062) {
-             reject({status_code: 410, message: "User already exists"})
+             reject(response(410, "User already exists"));
              return;
         }
 
         // TODO: Consider handling other errors that come with SET
         if (err) {
-            reject({status_code: 500, message: "Server failed to create user"});
+            reject(response(500, "Server failed to create user"));
             return;
         }
 
-        resolve(user);
+        resolve(response(201, user));
     }));
 }
 
@@ -71,19 +72,16 @@ User.removeById = async function(userId) {
                     WHERE userId = '${userId}'`;
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         if (err) { 
-            reject({status_code: 500, message: "Server failed to find user"})
+            reject(response(500, "Server failed to find user"));
             return;
         }
         
         if (rows?.affectedRows == 0) {
-            reject({
-                status_code: 404,
-                message: "User not removed.. user may not exist"});
+            reject(response(404, "User not removed.. user may not exist"));
             return;
         }
-
         
-        resolve(`${userId} was removed`);
+        resolve(response(200, userId));
     }));
 }
 
@@ -98,24 +96,21 @@ User.update = async function (user){
         
         if (err) {
             // console.log(err);
-            reject({status_code: 500, message: "Server failed to update playerName of user"}); 
+            reject(response(500, "Server failed to update playerName of user")); 
             return;
         };
 
         if (rows?.affectedRows == 0) {
-            reject({
-                status_code: 404,
-                message: "Could not find provided user id"});
+            reject(response(404, "Could not find provided user id"));
             return; 
         }
         
         if (rows?.changedRows == 0) {
-            reject({
-                status_code: 404,
-                message: "The user specified may already contain the data provided"});
+            response(404, "User was found but not updated; The user specified may already contain the data provided");
             return;
         }
-        resolve(user);
+
+        resolve(response(200, user));
     }));
 }
 

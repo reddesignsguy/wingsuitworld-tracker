@@ -5,9 +5,9 @@ exports.get = async function(req,res) {
     // Get User
     try {
         const result = await User.getById(req.params.userId);
-        res.send(result);
+        res.status(result.status_code).send(`Retrieved user: \n ${result.message}`);
     } catch (err) {
-        res.status(err.status_code).send(`Getting user by id failed. \n Error Message: ${err.message}`);
+        res.status(err.status_code).send(err.message);
     };
 }
 
@@ -19,33 +19,33 @@ exports.create = async function(req,res) {
     });
     try {
         const result = await User.create(user);
-        res.send(result);
+        res.status(result.status_code).send(`Created user: \n ${result.message}`);
     }
     catch (err) {
-        res.status(err.status_code).send(`Creating new user failed. \n ${err.message}`);
+        res.status(err.status_code).send(err.message);
     }
 }
 
 exports.remove = async function(req, res) {
     try {
         const result = await User.removeById(req.params.userId);
-        res.send(result);
+        res.status(result.status_code).send(`Removed user: \n ${result.message}`);
     } catch (err) {
-        res.status(err.status_code).send(`Removing user failed. \n ${err.message}`);
+        res.status(err.status_code).send(err.message);
     }
 }
 
 exports.updatePlayerNameById = async function(req, res) {
     // Validate request
     if (Object.keys(req.body).length === 0) {
-        res.status(400).send({message: "Content can not be empty!"});
+        res.status(400).send("Content can not be empty!");
     }
 
     const user = new User({userId: req.params.userId, playerName: req.body.playerName});
     try {
         const result = await User.update(user);
-        res.send(JSON.stringify(result));
+        res.status(result.status_code).send(`Updated user's player name: \n ${result.message}`);
     } catch (err) {
-        res.status(err.status_code).send(`Failed to update player's playername by id. \n ${err.message}`);
+        res.status(err.status_code).send(err.message);
     }
 }
