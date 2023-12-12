@@ -7,5 +7,6 @@ require('dotenv').config();
 // Get player datastore
 profileRoutes.get('/:playername', Profile.get);
 
+profileRoutes.put('/claim', Profile.claim);
 
 module.exports = profileRoutes; 

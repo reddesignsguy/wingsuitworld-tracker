@@ -1,13 +1,28 @@
-const ProfileService = require("../services/profile.service");
+const {getProfile, claimProfile} = require("../services/profile.service");
 
-// * Only repsonsible for handling the input and output, business logic specified in model's service
+// TODO Error checking
 exports.get = async function(req, res) {
-    // TODO Error check the request
     try {
-        const data = await ProfileService.getProfile(req.params.playername);
-
-    res.json(data);
-    } catch (error) {
+        const data = await getProfile(req.params.playername);
+        res.json(data);
+    } catch (err) {
         res.sendStatus(404);
+    }
+}
+
+exports.claim = async function(req, res) {
+    // Validate request
+    if (Object.keys(req.body).length === 0) {
+        res.status(400).send("Content can not be empty!");
+    }
+
+    // TODO Make sure user is logged in (token)
+
+    try {
+        const result = await claimProfile(req.body.userId, req.body.playerName, req.body.profileCode);
+        res.status(result.status_code).send(result.message);
+    } catch (err) {
+        // TODO Log the errors
+        res.status(err.status_code).send(err.message);
     }
 }

@@ -18,7 +18,7 @@ const connection = mysql.createConnection({
 connection.connect();
 
 // * Model promises either a success or failure, the logic is decided here
-User.getById = async function(userId) {
+User.getById = async function(userId, stringifyResponse = true) {
     if (connection.state === 'disconnected') {
         return respond(null, {status: 'fail', message: 'failed to connect to db'});
     };
@@ -26,7 +26,7 @@ User.getById = async function(userId) {
     const query = `SELECT * FROM users WHERE userId = '${userId}' LIMIT 1`;
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         if (err) {
-            reject(response(500, "Server failed to find user"))
+            reject(response(500, "Server failed to find user"));
             return;
         }
 
@@ -34,8 +34,8 @@ User.getById = async function(userId) {
             reject(response(404, "User does not exist"));
             return;
         }
-
-        resolve(response(200, rows[0]));
+        
+        resolve(response(200, rows[0], stringifyResponse));
     }));
 }
 
@@ -94,9 +94,14 @@ User.update = async function (user){
     const query = buildUserPatchQuery(user);
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         
+        
+        if (err.errno == 1062) {
+            reject(response(500, `Another user has already claimed the profile of ${user.playerName}!`)); 
+            return;
+        };
+
         if (err) {
-            // console.log(err);
-            reject(response(500, "Server failed to update playerName of user")); 
+            reject(response(500, `Server failed to update playerName of user: ${err}`)); 
             return;
         };
 
@@ -106,7 +111,7 @@ User.update = async function (user){
         }
         
         if (rows?.changedRows == 0) {
-            response(404, "User was found but not updated; The user specified may already contain the data provided");
+            reject(response(404, "User was found but not updated; The user specified may already contain the data provided"));
             return;
         }
 
