@@ -34,18 +34,3 @@ exports.remove = async function(req, res) {
         res.status(err.status_code).send(err.message);
     }
 }
-
-exports.updatePlayerNameById = async function(req, res) {
-    // Validate request
-    if (Object.keys(req.body).length === 0) {
-        res.status(400).send("Content can not be empty!");
-    }
-
-    const user = new User({userId: req.params.userId, playerName: req.body.playerName});
-    try {
-        const result = await User.update(user);
-        res.status(result.status_code).send(`Updated user's player name: \n ${result.message}`);
-    } catch (err) {
-        res.status(err.status_code).send(err.message);
-    }
-}
