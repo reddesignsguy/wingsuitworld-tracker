@@ -37,6 +37,5 @@ exports.getMaps = function(datastoreApiResponse) {
 }
 
 exports.getProfileCode = function(datastoreApiResponse) {
-  return 123;
   return datastoreApiResponse?.Data?.ProfileCode;
 }

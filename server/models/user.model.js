@@ -95,7 +95,7 @@ User.update = async function (user){
     return new Promise((resolve, reject) => connection.query(query, (err, rows) => {
         
         
-        if (err.errno == 1062) {
+        if (err?.errno == 1062) {
             reject(response(500, `Another user has already claimed the profile of ${user.playerName}!`)); 
             return;
         };

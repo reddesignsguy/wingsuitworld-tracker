@@ -59,6 +59,7 @@ exports.claimProfile = async function(userId, playerName, profileCode) {
     const playerId = getUserId(robloxUserApiResponse);
 
     const datastoreApiResponse = await datastoreApi.fetch(playerId);
+
     if (getProfileCode(datastoreApiResponse) != profileCode) {
         reject(response(401, 'Incorrect profile code given. User should log into the game to find the user`s correct profile code'));
         return;
@@ -68,8 +69,21 @@ exports.claimProfile = async function(userId, playerName, profileCode) {
     const newUserData = new User({userId: userId, playerName: playerName});
     try {
         const dbResult = await User.update(newUserData);
-        resolve(response(201, `${userId} has claimed ${playerName}'s profile. Result: ${JSON.stringify(result.message)}`));
+        resolve(response(201, `${userId} has claimed ${playerName}'s profile. Result: ${JSON.stringify(dbResult.message)}`));
     } catch (err) {
         reject(response(err.status_code, `Attempted to claim profile but a database error occurred: ${err.message}`));
     } 
 })};
+
+exports.unclaimProfile = async function(userId) {
+    const user = new User({userId: userId, playerName: null});
+
+    return new Promise(async (resolve,reject) => {
+        try {
+            const dbResult = await User.update(user);
+            resolve(response(201, `${userId} has unclaimed a profile. Result: ${JSON.stringify(dbResult.message)}`));
+        } catch (err) {
+            console.log(err);
+            reject(response(err.status_code, `Attempted to unclaim profile but a database error occurred: ${err.message}`));
+        } 
+    })};

@@ -9,4 +9,6 @@ profileRoutes.get('/:playername', Profile.get);
 
 profileRoutes.put('/claim', Profile.claim);
 
+profileRoutes.put('/unclaim', Profile.unclaim);
+
 module.exports = profileRoutes; 
