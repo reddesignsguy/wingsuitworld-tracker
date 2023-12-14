@@ -96,11 +96,14 @@ User.update = async function (user){
         
         
         if (err?.errno == 1062) {
-            reject(response(500, `Another user has already claimed the profile of ${user.playerName}!`)); 
+            reject(response(409, `Another user has already claimed the profile of ${user.playerName}!`)); 
             return;
         };
 
         if (err) {
+            if (err.errno == 1602) {
+                reject(response(409, `${err}`)); 
+            }
             reject(response(500, `Server failed to update playerName of user: ${err}`)); 
             return;
         };

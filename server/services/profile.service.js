@@ -27,20 +27,20 @@ exports.getProfile = async function (playerName) {
     return display;
 }
 
-// Backend: To claim a profile is to update a user's "playerName" in DB
+// Backend: To claim a profile is to update modify user data in DB (not in datastore)
 exports.claimProfile = async function(userId, playerName, profileCode) {
     return new Promise(async (resolve, reject) => {
 
-    // 1. Check if user already has claimed a profile
     var existingUserData;
     try {
         existingUserData = await User.getById(userId, false);
     } catch (err) {
         // TODO: Define a type for a response object so we know what the type of err is
-        reject(err);
+        reject(response(404, `Can't claim a profile for a user that doesn't exist. DB message: ${err.message}`));
         return;
     }
     
+    // 1. Check if user already has claimed a profile
     if (existingUserData.message.playerName != null) {
         reject(response(409, 'User has already claimed a profile. User should unclaim user`s profile first.'));
         return;
@@ -65,12 +65,18 @@ exports.claimProfile = async function(userId, playerName, profileCode) {
         return;
     }
     
-    // 4. Claim profile
+    // 3. Claim profile
     const newUserData = new User({userId: userId, playerName: playerName});
     try {
         const dbResult = await User.update(newUserData);
         resolve(response(201, `${userId} has claimed ${playerName}'s profile. Result: ${JSON.stringify(dbResult.message)}`));
     } catch (err) {
+        // * business logic error
+        if (err.status_code == 409) {
+            reject(response(err.status_code, `Another user has already claimed ${playerName}'s profile! DB Error: ${err.message}`));
+            return;
+        }
+        // * generic DB error
         reject(response(err.status_code, `Attempted to claim profile but a database error occurred: ${err.message}`));
     } 
 })};
