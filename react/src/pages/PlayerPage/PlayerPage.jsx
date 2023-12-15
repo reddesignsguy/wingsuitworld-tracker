@@ -3,30 +3,29 @@ import "./PlayerPage.css";
 import intro__background__1 from "../../media/vectors/player-page__intro__background.svg";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useAuth0 } from "@auth0/auth0-react";
 
-export default function PlayerPage() {
+export default function PlayerPage({ setAlertBar }) {
   const [[name, rank, img, topScore, totalScore, maps], setPlayer] = useState([
     null,
     null,
     null,
     null,
     null,
-    [
-      {
-        title: "shouldn't be appearing",
-        plays: 69696969,
-        img: "https://tr.rbxcdn.com/36614e9167f2da136af82915edcfa46e/150/150/Image/Png",
-        code: "shouldnt be appearing",
-      },
-    ],
+    [],
   ]);
-
   const { playername } = useParams();
+  const { isAuthenticated, user } = useAuth0();
 
   useEffect(() => {
     const fetchPlayerData = async () => {
-      const data = await fetch(`http://localhost:5051/player/${playername}`);
+      const data = await fetch(`http://localhost:5051/profile/${playername}`);
+      // TODO: 1. Handle no player found
+      // TODO: 2. Handle no datastore found
+      // TODO: 3. Handle loading state (there's probably a standardized way of doing this)
+      console.log(data);
       data.json().then((json) => {
+        console.log(json);
         setPlayer([
           json.name,
           `Rank#${json.rank}`,
@@ -38,9 +37,30 @@ export default function PlayerPage() {
       });
     };
 
+    // TODO Check if profile is claimed
+    const checkIfClaimed = async () => {
+      if (true) {
+        setAlertBar(
+          <AlertBar
+            text="Claim this profile"
+            popup={
+              <ClaimProfilePopup
+                isAuthenticated={isAuthenticated}
+                userId={user?.sub}
+                playerName={playername}
+                setAlertBar={setAlertBar}
+              />
+            }
+          />
+        );
+      }
+    };
+
     fetchPlayerData();
+    checkIfClaimed();
   }, []);
 
+  // TODO Implement Claim profile
   return (
     <section className="player-page">
       <section className="content">
@@ -86,6 +106,7 @@ export default function PlayerPage() {
   );
 }
 
+// * Defined this outside of PlayerPage to prevent its re-creation every time the PlayerPage is rerendered
 function Maps(props) {
   return (
     <>
@@ -110,4 +131,81 @@ function Map(props) {
       <span className="map__container__code"> {props.code}</span>
     </section>
   );
+}
+
+function AlertBar(props) {
+  const { text, popup } = props;
+  const [popupIsRevealed, setPopupIsRevealed] = useState(false);
+
+  return (
+    <>
+      <section
+        className={!popup ? "alert-bar" : "alert-bar_popup"}
+        onClick={() => {
+          setPopupIsRevealed(true);
+        }}
+      >
+        <span className="alert-bar__text"> {text} </span>
+      </section>
+
+      {popup && popupIsRevealed ? popup : null}
+    </>
+  );
+}
+
+function ClaimProfilePopup(props) {
+  const { isAuthenticated, userId, playerName, setAlertBar } = props; // prop destructuring
+  const [input, setInput] = useState("");
+
+  return (
+    <section className="claim-profile-popup">
+      <span>
+        Log in to the game as {playerName} and enter your profile code
+      </span>
+      <input
+        className="profile-code__input"
+        placeholder="123456"
+        onInput={(e) => {
+          // @ts-ignore
+          setInput(e.target.value);
+        }}
+      ></input>
+      <button
+        className="profile-code__input__button"
+        onClick={async () => {
+          setAlertBar(<AlertBar text="You claimed this profile" />);
+          if (isAuthenticated && userId) {
+            const claimed = await claimProfile(
+              props.userId,
+              props.playerName,
+              input
+            );
+          }
+        }}
+      >
+        Claim
+      </button>
+    </section>
+  );
+}
+
+async function claimProfile(userId, playerName, profileCode) {
+  const data = {
+    userId: userId,
+    playerName: playerName,
+    profileCode: profileCode,
+  };
+
+  var res = await fetch(`http://localhost:5051/profile/claim`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+  if (res.ok) {
+    return true;
+  } else {
+    return false;
+  }
 }

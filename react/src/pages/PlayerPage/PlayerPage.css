@@ -218,6 +218,60 @@
     }
 }
 
+.alert-bar {
+    display: flex;
+    background-color: var(--primary);
+    height: 40px;
+    transition: ease all 0.2s;
+    align-items: center;
+    justify-content: center;
+  }
+
+.alert-bar_popup {
+    display: flex;
+    background-color: var(--primary);
+    height: 40px;
+    transition: ease all 0.2s;
+    align-items: center;
+    justify-content: center;
+  }
+
+
+  .alert-bar_popup:hover {
+   height:80px;
+   cursor: pointer;
+  }
+  
+  .alert-bar__text {
+    color: white;
+    font-family: 'built-titling';
+    font-size: 1.2rem;
+    letter-spacing: 0.08rem;
+  }
+
+  .claim-profile-popup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 6;
+    width: 370px;
+    background-color: var(--dark-gray);
+    color: var(--bright);
+    padding: 20px;
+}
+
+.profile-code__input {
+    display: block;
+}
+
+.profile-code__input__button {
+    display: block;
+}
+
 /* 
 1. Problems with LONG descendant selector chains
 
