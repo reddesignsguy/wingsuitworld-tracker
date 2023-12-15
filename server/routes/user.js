@@ -1,10 +1,13 @@
 const express = require('express');
 const userRoutes = express.Router();
-const {get, create, remove, updatePlayerNameById} = require("../controllers/user.controller");
+const {get, create, remove, getByPlayerName} = require("../controllers/user.controller");
 
+// 1. This route has to be before ..
+userRoutes.get("/playername", getByPlayerName)
+
+// 2. this one. Otherwise, this one overwrites the above one (probably bc. of the parameter)
 userRoutes.get('/:userId', get);
 
-// TODO Error handling
 userRoutes.post('/', create);
 
 userRoutes.delete('/:userId', remove);

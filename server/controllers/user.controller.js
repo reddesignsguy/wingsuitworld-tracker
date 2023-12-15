@@ -5,7 +5,16 @@ exports.get = async function(req,res) {
     // Get User
     try {
         const result = await User.getById(req.params.userId);
-        res.status(result.status_code).send(`Retrieved user: \n ${result.message}`);
+        res.status(result.status_code).send(result.message);
+    } catch (err) {
+        res.status(err.status_code).send(err.message);
+    };
+}
+
+exports.getByPlayerName = async function(req,res) {
+    try {
+        const result = await User.getByPlayerName(req.body.playerName);
+        res.status(result.status_code).send(result.message);
     } catch (err) {
         res.status(err.status_code).send(err.message);
     };

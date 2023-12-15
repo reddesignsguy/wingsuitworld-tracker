@@ -39,6 +39,27 @@ User.getById = async function(userId, stringifyResponse = true) {
     }));
 }
 
+User.getByPlayerName = async function(playerName, stringifyResponse = true) {
+    if (connection.state === 'disconnected') {
+        return respond(null, {status: 'fail', message: 'failed to connect to db'});
+    };
+
+    const query = `SELECT * FROM users WHERE playerName = '${playerName}' LIMIT 1`;
+    return new Promise((resolve, reject) => connection.query(query, (err,rows) => {
+        if (err) {
+            reject(response(500, "Server failed to find user"));
+            return;
+        }
+        
+        if (rows?.length == 0) {
+            reject(response(404, "Cannot find user with provided player name"));
+            return;
+        }
+        
+        resolve(response(200, rows[0], stringifyResponse));
+    }));
+}
+
 // ! When User schema grows, consider a POST function that replaces all columns, i.e: This function would turn into User.create
 User.create = async function(user) {
     if (connection.state === 'disconnected') {
