@@ -3,17 +3,18 @@ import Navbar from './Navbar'
 import Home from './pages/Home';
 import Leaderboards from './pages/Leaderboards';
 import PlayerPage from './pages/PlayerPage';
-import {Routes, Route} from 'react-router-dom';
+import {Routes, Route, useLocation} from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
 
 function App() {
-
+  
   const {isAuthenticated, user } = useAuth0();
   const [userData, setUserData] = useState(null); 
   const [AlertBar, setAlertBar] = useState(null); // * "Lifting state up" pattern
-  useEffect(() => {
+  const location = useLocation();
 
+  useEffect(() => {
     // ! This logic should not be in front-end, use Auth0 Action workflow
     async function addUserToDbIfDoesntExist() {
       if (isAuthenticated && user) {
@@ -45,8 +46,16 @@ function App() {
       }
     }
 
+    // hide alert bar if user is not on player page
+    function calculateAlertBar() {
+      if (location.pathname.indexOf('/player/') != 0) {
+        setAlertBar(null);
+      }
+    }
+
+    calculateAlertBar();
     addUserToDbIfDoesntExist();
-  }, [isAuthenticated]);
+  }, [isAuthenticated, location]);
   return (
     <div className="App">
       {AlertBar}
