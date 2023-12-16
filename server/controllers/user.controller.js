@@ -13,7 +13,7 @@ exports.get = async function(req,res) {
 
 exports.getByPlayerName = async function(req,res) {
     try {
-        const result = await User.getByPlayerName(req.body.playerName);
+        const result = await User.getByPlayerName(req.params.playername);
         res.status(result.status_code).send(result.message);
     } catch (err) {
         res.status(err.status_code).send(err.message);

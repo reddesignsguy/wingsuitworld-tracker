@@ -59,6 +59,10 @@ exports.claimProfile = async function(userId, playerName, profileCode) {
     const playerId = getUserId(robloxUserApiResponse);
 
     const datastoreApiResponse = await datastoreApi.fetch(playerId);
+    if (datastoreApiResponse == null) {
+        reject(response(404, "Player has not played the game yet"))
+        return;
+    }
 
     if (getProfileCode(datastoreApiResponse) != profileCode) {
         reject(response(401, 'Incorrect profile code given. User should log into the game to find the user`s correct profile code'));

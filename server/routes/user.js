@@ -3,7 +3,7 @@ const userRoutes = express.Router();
 const {get, create, remove, getByPlayerName} = require("../controllers/user.controller");
 
 // 1. This route has to be before ..
-userRoutes.get("/playername", getByPlayerName)
+userRoutes.get("/playername/:playername", getByPlayerName)
 
 // 2. this one. Otherwise, this one overwrites the above one (probably bc. of the parameter)
 userRoutes.get('/:userId', get);
