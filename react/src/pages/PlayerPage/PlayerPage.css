@@ -220,7 +220,8 @@
 
 .alert-bar {
     display: flex;
-    background-color: var(--primary);
+    color: var(--bright);
+    background-color: var(--dark-gray);
     height: 40px;
     transition: ease all 0.2s;
     align-items: center;
@@ -229,6 +230,7 @@
 
 .alert-bar_popup {
     display: flex;
+    color: white;
     background-color: var(--primary);
     height: 40px;
     transition: ease all 0.2s;
@@ -243,7 +245,6 @@
   }
   
   .alert-bar__text {
-    color: white;
     font-family: 'built-titling';
     font-size: 1.2rem;
     letter-spacing: 0.08rem;

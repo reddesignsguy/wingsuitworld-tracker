@@ -10,24 +10,25 @@ import { useEffect, useState } from 'react';
 function App() {
 
   const {isAuthenticated, user } = useAuth0();
+  const [userData, setUserData] = useState(null); 
   const [AlertBar, setAlertBar] = useState(null); // * "Lifting state up" pattern
-  // TODO: This logic should not be in front-end, use Auth0 Action workflow
-  // Once authenticated, upload user to DB if not present
   useEffect(() => {
-    async function checkUserExists() {
+
+    // ! This logic should not be in front-end, use Auth0 Action workflow
+    async function addUserToDbIfDoesntExist() {
       if (isAuthenticated && user) {
         const userId = user?.sub;
         var res = await fetch(`http://localhost:5051/user/${userId}`);
         if (res.ok) {
+          console.log(res)
+          res.json().then(userData => {setUserData(userData); console.log(`setting user data to ${userData["playername"]}`)})
           console.log('user already uploaded to db')
         } else {
-          
               console.log('no user found in db')
-  
               const data = {
                 userId: userId
               }
-  
+              
               res = await fetch(`http://localhost:5051/user`, 
                 {method: 'POST', 
                 headers: {
@@ -35,6 +36,7 @@ function App() {
                 },
                 body: JSON.stringify(data),
                 });
+
               if (res.ok) {
                 console.log("user has been created")
               }
@@ -43,7 +45,7 @@ function App() {
       }
     }
 
-    checkUserExists();
+    addUserToDbIfDoesntExist();
   }, [isAuthenticated]);
   return (
     <div className="App">
@@ -54,7 +56,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home/>}/>
           <Route path="/leaderboards" element={<Leaderboards/>}/>
-          <Route path="/player/:playername" element={<PlayerPage setAlertBar = {setAlertBar}/>}></Route>
+          <Route path="/player/:playername" element={<PlayerPage setAlertBar = {setAlertBar} userData={userData}/>}></Route>
         </Routes>
       </div>
     </div>

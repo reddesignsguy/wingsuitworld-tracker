@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 
-export default function PlayerPage({ setAlertBar }) {
+export default function PlayerPage(props) {
   const [[name, rank, img, topScore, totalScore, maps], setPlayer] = useState([
     null,
     null,
@@ -14,8 +14,9 @@ export default function PlayerPage({ setAlertBar }) {
     null,
     [],
   ]);
+  const { userData, setAlertBar } = props;
   const { playername } = useParams();
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated, user } = useAuth0(); // ! Note to devs: Refreshing page will mess up authentication, you must log out and log back in
 
   useEffect(() => {
     const fetchPlayerData = async () => {
@@ -36,8 +37,19 @@ export default function PlayerPage({ setAlertBar }) {
 
     // shows alert bar that appears above navbar
     const calculateAlertBar = async () => {
+      const existingProfileOfUser = userData?.["playerName"];
       var profileOwner = await checkWhoClaimedProfile(playername);
       const loggedInUserId = user?.sub;
+
+      // user already has a profile
+      if (existingProfileOfUser) {
+        setAlertBar(
+          <AlertBar
+            text={`You have already claimed ${existingProfileOfUser}'s profile`}
+          />
+        );
+        return;
+      }
 
       // no one has claimed this profile
       if (profileOwner == null) {
@@ -56,13 +68,7 @@ export default function PlayerPage({ setAlertBar }) {
         );
       } else {
         // someone has claimed this profile
-        profileOwner.json().then((profileOwnerData) => {
-          if (profileOwnerData["userId"] == loggedInUserId) {
-            setAlertBar(<AlertBar text="You claimed this profile" />);
-          } else {
-            setAlertBar(<AlertBar text="This profile is claimed" />);
-          }
-        });
+        setAlertBar(<AlertBar text="This profile is claimed" />);
       }
     };
 
