@@ -21,11 +21,8 @@ export default function PlayerPage({ setAlertBar }) {
     const fetchPlayerData = async () => {
       const data = await fetch(`http://localhost:5051/profile/${playername}`);
       // TODO: 1. Handle no player found
-      // TODO: 2. Handle no datastore found
       // TODO: 3. Handle loading state (there's probably a standardized way of doing this)
-      console.log(data);
       data.json().then((json) => {
-        console.log(json);
         setPlayer([
           json.name,
           `Rank#${json.rank}`,
@@ -37,28 +34,41 @@ export default function PlayerPage({ setAlertBar }) {
       });
     };
 
-    // TODO Check if profile is claimed
-    const checkIfClaimed = async () => {
-      if (true) {
+    // shows alert bar that appears above navbar
+    const calculateAlertBar = async () => {
+      var profileOwner = await checkWhoClaimedProfile(playername);
+      const loggedInUserId = user?.sub;
+
+      // no one has claimed this profile
+      if (profileOwner == null) {
         setAlertBar(
           <AlertBar
             text="Claim this profile"
             popup={
               <ClaimProfilePopup
                 isAuthenticated={isAuthenticated}
-                userId={user?.sub}
+                userId={loggedInUserId}
                 playerName={playername}
                 setAlertBar={setAlertBar}
               />
             }
           />
         );
+      } else {
+        // someone has claimed this profile
+        profileOwner.json().then((profileOwnerData) => {
+          if (profileOwnerData["userId"] == loggedInUserId) {
+            setAlertBar(<AlertBar text="You claimed this profile" />);
+          } else {
+            setAlertBar(<AlertBar text="This profile is claimed" />);
+          }
+        });
       }
     };
 
+    calculateAlertBar();
     fetchPlayerData();
-    checkIfClaimed();
-  }, []);
+  }, [user]);
 
   // TODO Implement Claim profile
   return (
@@ -189,6 +199,7 @@ function ClaimProfilePopup(props) {
   );
 }
 
+// API Calls
 async function claimProfile(userId, playerName, profileCode) {
   const data = {
     userId: userId,
@@ -207,5 +218,23 @@ async function claimProfile(userId, playerName, profileCode) {
     return true;
   } else {
     return false;
+  }
+}
+
+async function checkWhoClaimedProfile(playerName) {
+  const data = {
+    playerName: playerName,
+  };
+  var res = await fetch(`http://localhost:5051/user/playername/${playerName}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (res.ok) {
+    return res;
+  } else {
+    return null;
   }
 }
