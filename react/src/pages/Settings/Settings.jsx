@@ -2,8 +2,12 @@ import "./Settings.css";
 import { BiEditAlt } from "react-icons/bi";
 import { useState } from "react";
 
+const settingsOptions = ["Account Settings", "Player Management"];
+
 export default function Settings(props) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [activeSettingOption, setActiveSettingOption] = useState(0);
+
   return (
     <section className="settings-page">
       <div className="settings">
@@ -19,19 +23,21 @@ export default function Settings(props) {
               setMobileSidebarOpen(!mobileSidebarOpen);
             }}
           >
-            TitleHere + an arrow icon
+            {settingsOptions[activeSettingOption]}
           </h3>
 
           {/* Nav bar items */}
           {mobileSidebarOpen && (
             <ul className="settings__sidebar_mobile__items">
-              <li>Account Settings</li>
-              <li>Player Management</li>
+              <SideBarItems
+                setActiveSettingOption={setActiveSettingOption}
+                setMobileSidebarOpen={setMobileSidebarOpen}
+              />
             </ul>
           )}
         </section>
         <section className="settings__selected__menu">
-          {<PlayerManagementMenu />}
+          {<SelectedMenu activeSettingOption={activeSettingOption} />}
         </section>
       </div>
     </section>
@@ -83,15 +89,33 @@ function PlayerManagementMenu(props) {
   );
 }
 
-function SideBarItem(props) {
-  const { icon, text, onClick } = props;
+function SelectedMenu(props) {
+  const { activeSettingOption } = props;
+  switch (settingsOptions[activeSettingOption]) {
+    case "Account Settings":
+      return <AccountSettingsMenu />;
+    case "Player Management":
+      return <PlayerManagementMenu />;
+    default:
+      return <AccountSettingsMenu />;
+  }
+}
+
+function SideBarItems(props) {
+  const { setActiveSettingOption, setMobileSidebarOpen } = props;
   return (
-    <li className="">
-      <div onClick={onClick()}>
-        {icon}
-        <span> {text}</span>
-      </div>
-    </li>
+    <>
+      {settingsOptions.map((settingOption, index) => (
+        <li
+          onClick={() => {
+            setActiveSettingOption(index);
+            setMobileSidebarOpen(false);
+          }}
+        >
+          {settingOption}
+        </li>
+      ))}{" "}
+    </>
   );
 }
 
