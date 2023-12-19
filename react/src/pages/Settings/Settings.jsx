@@ -1,12 +1,13 @@
 import "./Settings.css";
-import { BiEditAlt } from "react-icons/bi";
+import { BiEditAlt, BiSolidUser } from "react-icons/bi";
+import { IoIosSettings, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { useState } from "react";
 
-const settingsOptions = ["Account Settings", "Player Management"];
+const settings = ["Account Settings", "Player Management"];
 
 export default function Settings(props) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
-  const [activeSettingOption, setActiveSettingOption] = useState(0);
+  const [activeSetting, setActiveSetting] = useState(settings[0]);
 
   return (
     <section className="settings-page">
@@ -16,28 +17,27 @@ export default function Settings(props) {
           <li>Account Settings</li>
           <li>Player Management</li>
         </ul>
+
         {/* Mobile nav bar */}
         <section className="settings__sidebar_mobile">
-          <h3
-            onClick={() => {
-              setMobileSidebarOpen(!mobileSidebarOpen);
-            }}
-          >
-            {settingsOptions[activeSettingOption]}
-          </h3>
-
+          <ActiveSettingHeaderMobile
+            activeSetting={activeSetting}
+            mobileSidebarOpen={mobileSidebarOpen}
+            setMobileSidebarOpen={setMobileSidebarOpen}
+          />
           {/* Nav bar items */}
           {mobileSidebarOpen && (
             <ul className="settings__sidebar_mobile__items">
               <SideBarItems
-                setActiveSettingOption={setActiveSettingOption}
+                setActiveSettingOption={setActiveSetting}
                 setMobileSidebarOpen={setMobileSidebarOpen}
+                activeSetting={activeSetting}
               />
             </ul>
           )}
         </section>
         <section className="settings__selected__menu">
-          {<SelectedMenu activeSettingOption={activeSettingOption} />}
+          {<SelectedMenu activeSettingOption={activeSetting} />}
         </section>
       </div>
     </section>
@@ -91,7 +91,7 @@ function PlayerManagementMenu(props) {
 
 function SelectedMenu(props) {
   const { activeSettingOption } = props;
-  switch (settingsOptions[activeSettingOption]) {
+  switch (activeSettingOption) {
     case "Account Settings":
       return <AccountSettingsMenu />;
     case "Player Management":
@@ -101,17 +101,39 @@ function SelectedMenu(props) {
   }
 }
 
+function ActiveSettingHeaderMobile(props) {
+  const { activeSetting, mobileSidebarOpen, setMobileSidebarOpen } = props;
+  return (
+    <h3
+      className="settings__sidebar_mobile__header"
+      onClick={() => {
+        setMobileSidebarOpen(!mobileSidebarOpen);
+      }}
+    >
+      <ActiveSettingIcon activeSetting={activeSetting} />
+      {activeSetting}
+      {mobileSidebarOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
+    </h3>
+  );
+}
+
 function SideBarItems(props) {
-  const { setActiveSettingOption, setMobileSidebarOpen } = props;
+  const { setActiveSettingOption, setMobileSidebarOpen, activeSetting } = props;
   return (
     <>
-      {settingsOptions.map((settingOption, index) => (
+      {settings.map((settingOption) => (
         <li
+          className={
+            settingOption == activeSetting
+              ? "settings__sidebar__item_active"
+              : "settings__sidebar__item_inactive"
+          }
           onClick={() => {
-            setActiveSettingOption(index);
+            setActiveSettingOption(settingOption);
             setMobileSidebarOpen(false);
           }}
         >
+          <ActiveSettingIcon settingOption={settingOption} />
           {settingOption}
         </li>
       ))}{" "}
@@ -146,4 +168,16 @@ function UnclaimSection(props) {
       </button>
     </>
   );
+}
+
+function ActiveSettingIcon(props) {
+  const { settingOption } = props;
+  switch (settingOption) {
+    case "Account Settings":
+      return <IoIosSettings />;
+    case "Player Management":
+      return <BiSolidUser />;
+    default:
+      return <BiSolidUser />;
+  }
 }

@@ -131,6 +131,19 @@
     background-color: var(--primary);
 }
 
+/* justify: Horizontal axis, align: vertical axis */
+/* items: set alignment of each individual item, content: set alignment of items as a whole, self: the container itself */
+
+.settings__sidebar_mobile__header{
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
+
+.settings__sidebar__item_inactive {
+    color: #7c7c7c;
+}
+
 @media (max-width: 620px) {
     .settings__sidebar_desktop {
         display: none;
@@ -153,3 +166,4 @@
     }
 
 }
+
