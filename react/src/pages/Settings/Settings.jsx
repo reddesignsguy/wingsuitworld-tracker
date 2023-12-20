@@ -78,7 +78,9 @@ function PlayerManagementMenu(props) {
         </span>
       </section>
       <section className="settings__selected__menu__category">
-        <h2>Player Profile</h2>
+        <h2 className="settings__selected__menu__header__subtitle">
+          Player Profile
+        </h2>
         <span className="settings__selected__menu__description">
           To claim a player's profile, enter the name of the ROBLOX player. You
           can only claim one profile at a time.
@@ -110,8 +112,7 @@ function ActiveSettingHeaderMobile(props) {
         setMobileSidebarOpen(!mobileSidebarOpen);
       }}
     >
-      <ActiveSettingIcon activeSetting={activeSetting} />
-      {activeSetting}
+      <SettingIcon activeSetting={activeSetting} /> {activeSetting}
       {mobileSidebarOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
     </h3>
   );
@@ -133,10 +134,9 @@ function SideBarItems(props) {
             setMobileSidebarOpen(false);
           }}
         >
-          <ActiveSettingIcon settingOption={settingOption} />
-          {settingOption}
+          <SettingIcon settingOption={settingOption} /> {settingOption}
         </li>
-      ))}{" "}
+      ))}
     </>
   );
 }
@@ -170,7 +170,7 @@ function UnclaimSection(props) {
   );
 }
 
-function ActiveSettingIcon(props) {
+function SettingIcon(props) {
   const { settingOption } = props;
   switch (settingOption) {
     case "Account Settings":

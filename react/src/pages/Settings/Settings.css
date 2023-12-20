@@ -32,8 +32,10 @@
     padding: 1rem;
     background-color: #1c1c1c;
     font-weight: bold;
+    font-size: 1rem;
     border-radius: 5px; 
 }
+
 .settings__selected__menu {
     padding: 1rem;
     display: flex;
@@ -46,10 +48,16 @@
 
 .settings__selected__menu__header__title {
      font-weight: 400;
+     font-size: 2rem;
+}
+
+.settings__selected__menu__header__subtitle{
+    font-size: 1.4rem;
 }
 
 .settings__selected__menu__description {
     color: #7c7c7c;
+    font-size: 1rem;
 }
 
 .settings__selected__menu__input {
@@ -119,7 +127,7 @@
     border: 2px white #7b7b7b;
     font-weight: bolder;
     outline: inherit;
-    font-size: 1.4rem;
+    font-size: 1.3rem;
     color: #f54444;
 }
 
