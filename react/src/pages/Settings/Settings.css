@@ -14,7 +14,8 @@
 
 .settings__sidebar_desktop {
     list-style: none;
-    width: max(15rem, 0%);
+    min-width: 13rem;
+    max-width: 13rem;
     display: flex;
     flex-direction: column;
     row-gap: 1rem;;
@@ -33,9 +34,9 @@
 .settings__selected__menu {
     padding: 1rem;
     display: flex;
+    width: 100%;
     row-gap: 1rem;
     flex-direction: column;
-    width: 100%;
     background-color: #1c1c1c;
     border-radius: 5px;
 }
@@ -143,9 +144,12 @@
 }
 
 
-.settings__sidebar_mobile__items{
+.settings__sidebar__items{
+    list-style: none;
     margin-top: 2rem;
-    font-size: 1.3rem;
+    font-size: 1rem;
+    padding: 0;
+    cursor:pointer;
 }
 
 .settings__sidebar__item_active {
@@ -154,6 +158,12 @@
 .settings__sidebar__item_inactive {
     margin: 0.5rem 0rem 0.5rem 0rem;
     color: #7c7c7c;
+    transition: all ease 0.3s;
+}
+
+.settings__sidebar__item_inactive:hover {
+    transform:translateX(0.5rem);
+    color: #b8b8b8;
 }
 
 @media (max-width: 620px) {
@@ -178,14 +188,15 @@
         row-gap: 0.1rem;
     }
 
-    .settings__sidebar_mobile__items {
+    .settings__sidebar__items {
         list-style: none;
         text-align: left;
         display: flex;
         flex-direction: column;
         row-gap: 1rem;;
         padding-left: 0rem;
-        font-weight: bold;
+        margin-top: 2rem;
+        font-size: 1.3rem;
     }
 
 }

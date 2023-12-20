@@ -14,8 +14,11 @@ export default function Settings(props) {
       <div className="settings">
         {/* 1. Desktop navbar items */}
         <ul className="settings__sidebar_desktop">
-          <li>Account Settings</li>
-          <li>Player Management</li>
+          <SideBarItems
+            setActiveSetting={setActiveSetting}
+            setMobileSidebarOpen={setMobileSidebarOpen}
+            activeSetting={activeSetting}
+          />
         </ul>
 
         {/* 2a.Mobile nav bar */}
@@ -29,7 +32,7 @@ export default function Settings(props) {
           {/* 2b.Mobile nav bar items */}
           {mobileSidebarOpen && (
             <SideBarItems
-              setActiveSettingOption={setActiveSetting}
+              setActiveSetting={setActiveSetting}
               setMobileSidebarOpen={setMobileSidebarOpen}
               activeSetting={activeSetting}
             />
@@ -118,10 +121,16 @@ function ActiveSettingHeaderMobile(props) {
   );
 }
 
+// Wrapper is made to increase readability. This specifically is for showing that this sidebar should take in the mobile css
+// function SideBarWrapper(props) {
+//   const { device, sideBarItems } = props;
+//   return <ul className={"settings__sidebar_mobile__items"}>{sideBarItems}</ul>;
+// }
+
 function SideBarItems(props) {
-  const { setActiveSettingOption, setMobileSidebarOpen, activeSetting } = props;
+  const { setActiveSetting, setMobileSidebarOpen, activeSetting } = props;
   return (
-    <ul className="settings__sidebar_mobile__items">
+    <ul className="settings__sidebar__items">
       {/* Create nav bar component for each setting option */}
       {settings.map((settingOption) => (
         <li
@@ -132,7 +141,7 @@ function SideBarItems(props) {
               : "settings__sidebar__item_inactive"
           }
           onClick={() => {
-            setActiveSettingOption(settingOption);
+            setActiveSetting(settingOption);
             setMobileSidebarOpen(false);
           }}
         >
