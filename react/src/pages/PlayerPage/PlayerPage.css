@@ -4,7 +4,7 @@
     - Using a percetange creates responsiveness for any type of smaller screen
     - Using an absolute number is for when the percentage of the page would make the content too big
     */
-    
+    padding-top: 4%;
     width: min(90%, 60.5rem); 
     margin: auto;
     letter-spacing: 0.03rem;
