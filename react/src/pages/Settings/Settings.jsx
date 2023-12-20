@@ -12,30 +12,30 @@ export default function Settings(props) {
   return (
     <section className="settings-page">
       <div className="settings">
-        {/* Desktop navbar items */}
+        {/* 1. Desktop navbar items */}
         <ul className="settings__sidebar_desktop">
           <li>Account Settings</li>
           <li>Player Management</li>
         </ul>
 
-        {/* Mobile nav bar */}
+        {/* 2a.Mobile nav bar */}
         <section className="settings__sidebar_mobile">
           <ActiveSettingHeaderMobile
             activeSetting={activeSetting}
             mobileSidebarOpen={mobileSidebarOpen}
             setMobileSidebarOpen={setMobileSidebarOpen}
           />
-          {/* Nav bar items */}
+
+          {/* 2b.Mobile nav bar items */}
           {mobileSidebarOpen && (
-            <ul className="settings__sidebar_mobile__items">
-              <SideBarItems
-                setActiveSettingOption={setActiveSetting}
-                setMobileSidebarOpen={setMobileSidebarOpen}
-                activeSetting={activeSetting}
-              />
-            </ul>
+            <SideBarItems
+              setActiveSettingOption={setActiveSetting}
+              setMobileSidebarOpen={setMobileSidebarOpen}
+              activeSetting={activeSetting}
+            />
           )}
         </section>
+        {/* 3. Selected menu */}
         <section className="settings__selected__menu">
           {<SelectedMenu activeSettingOption={activeSetting} />}
         </section>
@@ -121,9 +121,11 @@ function ActiveSettingHeaderMobile(props) {
 function SideBarItems(props) {
   const { setActiveSettingOption, setMobileSidebarOpen, activeSetting } = props;
   return (
-    <>
+    <ul className="settings__sidebar_mobile__items">
+      {/* Create nav bar component for each setting option */}
       {settings.map((settingOption) => (
         <li
+          // Determines navbar behavior
           className={
             settingOption == activeSetting
               ? "settings__sidebar__item_active"
@@ -134,10 +136,13 @@ function SideBarItems(props) {
             setMobileSidebarOpen(false);
           }}
         >
-          <SettingIcon settingOption={settingOption} /> {settingOption}
+          {/* Nav bar Icon */}
+          <SettingIcon settingOption={settingOption} />
+          {/* Nav bar text */}
+          {settingOption}
         </li>
       ))}
-    </>
+    </ul>
   );
 }
 

@@ -26,14 +26,8 @@
 }
 
 .settings__sidebar_mobile {
-    width: 100%;
-    text-align: center;
-    flex-direction: column;
-    padding: 1rem;
-    background-color: #1c1c1c;
-    font-weight: bold;
-    font-size: 1rem;
-    border-radius: 5px; 
+    display: none;
+    visibility: none;
 }
 
 .settings__selected__menu {
@@ -148,7 +142,17 @@
     justify-content: center;
 }
 
+
+.settings__sidebar_mobile__items{
+    margin-top: 2rem;
+    font-size: 1.3rem;
+}
+
+.settings__sidebar__item_active {
+    margin: 0.5rem 0rem 0.5rem 0rem;
+}
 .settings__sidebar__item_inactive {
+    margin: 0.5rem 0rem 0.5rem 0rem;
     color: #7c7c7c;
 }
 
@@ -156,6 +160,17 @@
     .settings__sidebar_desktop {
         display: none;
         visibility: none;
+    }
+
+    .settings__sidebar_mobile {
+        display: block;
+        visibility: none;
+        width: 100%;
+        flex-direction: column;
+        padding: 1rem;
+        background-color: #1c1c1c;
+        font-weight: bold;
+        border-radius: 5px; 
     }
 
     .settings {
