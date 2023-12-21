@@ -1,6 +1,7 @@
 import "./Settings.css";
 import { BiEditAlt, BiSolidUser } from "react-icons/bi";
 import { IoIosSettings, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import usePlayername from "../../hooks/usePlayername";
 import { useState } from "react";
 
 const settings = ["Account Settings", "Player Management"];
@@ -67,9 +68,7 @@ function AccountSettingsMenu(props) {
 }
 
 function PlayerManagementMenu(props) {
-  // todo: fetch associated playername programatically
-
-  const playername = "mockDataTest";
+  const playername = usePlayername();
   return (
     <>
       <section className="settings__selected__menu__header">
@@ -121,12 +120,6 @@ function ActiveSettingHeaderMobile(props) {
   );
 }
 
-// Wrapper is made to increase readability. This specifically is for showing that this sidebar should take in the mobile css
-// function SideBarWrapper(props) {
-//   const { device, sideBarItems } = props;
-//   return <ul className={"settings__sidebar_mobile__items"}>{sideBarItems}</ul>;
-// }
-
 function SideBarItems(props) {
   const { setActiveSetting, setMobileSidebarOpen, activeSetting } = props;
   return (
@@ -168,8 +161,7 @@ function ClaimSection(props) {
 }
 
 function UnclaimSection(props) {
-  var { playername } = props;
-  playername = "MockUsername. Change this in deployment!";
+  const playername = usePlayername();
 
   return (
     <>

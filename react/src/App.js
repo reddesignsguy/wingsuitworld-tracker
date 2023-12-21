@@ -3,9 +3,13 @@ import Navbar from './Navbar'
 import Home from './pages/Home';
 import Leaderboards from './pages/Leaderboards';
 import PlayerPage from './pages/PlayerPage';
+import Settings from './pages/Settings';
 import {Routes, Route, useLocation} from 'react-router-dom';
 import { useAuth0 } from '@auth0/auth0-react';
 import { useEffect, useState } from 'react';
+import {QueryClientProvider, QueryClient} from '@tanstack/react-query';
+
+const queryClient = new QueryClient({defaultOptions: {queries: {refetchOnWindowFocus: false, refetchOnMount: false}}});
 
 function App() {
   
@@ -21,7 +25,6 @@ function App() {
         const userId = user?.sub;
         var res = await fetch(`http://localhost:5051/user/${userId}`);
         if (res.ok) {
-          console.log(res)
           res.json().then(userData => {setUserData(userData); console.log(`setting user data to ${userData["playername"]}`)})
           console.log('user already uploaded to db')
         } else {
@@ -57,18 +60,22 @@ function App() {
     addUserToDbIfDoesntExist();
   }, [isAuthenticated, location]);
   return (
-    <div className="App">
-      {AlertBar}
-      <Navbar/>
-      <div className="gradient"></div>
-      <div className="pageContainer">
-        <Routes>
-          <Route path="/" element={<Home/>}/>
-          <Route path="/leaderboards" element={<Leaderboards/>}/>
-          <Route path="/player/:playername" element={<PlayerPage setAlertBar = {setAlertBar} userData={userData}/>}></Route>
-        </Routes>
+    // TODO wrap in React Provider
+    <QueryClientProvider client={queryClient}>
+      <div className="App"> 
+        {AlertBar}
+        <Navbar/>
+        {/* <div className="gradient"></div> */}
+        <div className="pageContainer">
+          <Routes>
+            <Route path="/" element={<Home/>}/>
+            <Route path="/leaderboards" element={<Leaderboards/>}/>
+            <Route path="/player/:playername" element={<PlayerPage setAlertBar = {setAlertBar} userData={userData}/>}></Route>
+            <Route path="settings" element = {<Settings/>}/>
+          </Routes>
+        </div>
       </div>
-    </div>
+    </QueryClientProvider>
   );
 }
 
