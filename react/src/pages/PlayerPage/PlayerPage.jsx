@@ -4,6 +4,8 @@ import intro__background__1 from "../../media/vectors/player-page__intro__backgr
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
+import AlertBar from "../../components/AlertBar";
+import ClaimProfilePopup from "../../components/ClaimProfilePopup";
 
 export default function PlayerPage(props) {
   const [[name, rank, img, topScore, totalScore, maps], setPlayer] = useState([
@@ -149,61 +151,41 @@ function Map(props) {
   );
 }
 
-function AlertBar(props) {
-  const { text, popup } = props;
-  const [popupIsRevealed, setPopupIsRevealed] = useState(false);
+// function ClaimProfilePopup(props) {
+//   const { isAuthenticated, userId, playerName, setAlertBar } = props; // prop destructuring
+//   const [input, setInput] = useState("");
 
-  return (
-    <>
-      <section
-        className={!popup ? "alert-bar" : "alert-bar_popup"}
-        onClick={() => {
-          setPopupIsRevealed(true);
-        }}
-      >
-        <span className="alert-bar__text"> {text} </span>
-      </section>
-
-      {popup && popupIsRevealed ? popup : null}
-    </>
-  );
-}
-
-function ClaimProfilePopup(props) {
-  const { isAuthenticated, userId, playerName, setAlertBar } = props; // prop destructuring
-  const [input, setInput] = useState("");
-
-  return (
-    <section className="claim-profile-popup">
-      <span>
-        Log in to the game as {playerName} and enter your profile code
-      </span>
-      <input
-        className="profile-code__input"
-        placeholder="123456"
-        onInput={(e) => {
-          // @ts-ignore
-          setInput(e.target.value);
-        }}
-      ></input>
-      <button
-        className="profile-code__input__button"
-        onClick={async () => {
-          setAlertBar(<AlertBar text="You claimed this profile" />);
-          if (isAuthenticated && userId) {
-            const claimed = await claimProfile(
-              props.userId,
-              props.playerName,
-              input
-            );
-          }
-        }}
-      >
-        Claim
-      </button>
-    </section>
-  );
-}
+//   return (
+//     <section className="claim-profile-popup">
+//       <span>
+//         Log in to the game as {playerName} and enter your profile code
+//       </span>
+//       <input
+//         className="profile-code__input"
+//         placeholder="123456"
+//         onInput={(e) => {
+//           // @ts-ignore
+//           setInput(e.target.value);
+//         }}
+//       ></input>
+//       <button
+//         className="profile-code__input__button"
+//         onClick={async () => {
+//           setAlertBar(<AlertBar text="You claimed this profile" />);
+//           if (isAuthenticated && userId) {
+//             const claimed = await claimProfile(
+//               props.userId,
+//               props.playerName,
+//               input
+//             );
+//           }
+//         }}
+//       >
+//         Claim
+//       </button>
+//     </section>
+//   );
+// }
 
 // API Calls
 async function claimProfile(userId, playerName, profileCode) {
@@ -213,6 +195,7 @@ async function claimProfile(userId, playerName, profileCode) {
     profileCode: profileCode,
   };
 
+  // TODO Refactor and call from apis
   var res = await fetch(`http://localhost:5051/profile/claim`, {
     method: "PUT",
     headers: {
