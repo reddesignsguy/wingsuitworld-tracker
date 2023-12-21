@@ -7,7 +7,7 @@ import {getUserById} from "../apis/apis.js"
 // useQuery handles state management for our user data
 export default function usePlayername() {
     const {user} = useAuth0();
-    const {data, status} =  useQuery({queryKey: ['userData'], queryFn: () => {return getUserById(user?.sub)}})
+    const {data, status} =  useQuery({queryKey: ['userData'], queryFn: () => {console.log("refetching user data from api because it's not in cache"); return getUserById(user?.sub)}})
 
     if (status === 'pending' || status === 'error') {
         return "Player name loading...";
