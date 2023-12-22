@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import { IoClose } from "react-icons/io5";
 
 // Wrap arounds dialog and utilizes HTML's modal capabilities (doesn't manage data)
-export default function Modal({ isOpen, onClose, title, children }) {
+export default function Modal({ isOpen, onClose, children }) {
   const [isModalOpen, setIsModalOpen] = useState(isOpen);
   const modalRef = useRef(null); // * allows us to reference the modal in the "HTML" world
 
@@ -36,17 +36,14 @@ export default function Modal({ isOpen, onClose, title, children }) {
   // * In effect, the modal is always in the component tree, however, its visibility is determined by HTML modal API
   return (
     <dialog ref={modalRef} className="modal">
-      <section className="modal__header">
-        <h2 className="modal__header__title">{title}</h2>
-        <button
-          className="modal__close-btn"
-          onClick={() => {
-            closeModal();
-          }}
-        >
-          <IoClose color="white" size={"2rem"} />
-        </button>
-      </section>
+      <div
+        className="modal__close-btn"
+        onClick={() => {
+          closeModal();
+        }}
+      >
+        <IoClose className="modal__close-btn_icon" />
+      </div>
       {children}
     </dialog>
   );
