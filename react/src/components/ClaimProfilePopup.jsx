@@ -1,5 +1,6 @@
+import styled from "styled-components";
 import { useAuth0 } from "@auth0/auth0-react";
-import "./Modal.css";
+import "./ClaimProfileModal.css";
 import AlertBar from "./AlertBar";
 import Modal from "./Modal";
 
@@ -13,16 +14,28 @@ const { claimProfile } = require("../apis/apis");
 export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
   const { isAuthenticated, user } = useAuth0();
   const [input, setInput] = useState("");
-  const title = `Claim ${playerName}'s profile`;
   const [isClaimSuccessful, setIsClaimSuccessful] = useState(false);
+
+  const handleClaim = async () => {
+    if (isAuthenticated && user) {
+      const userId = user.sub;
+      const claimed = await claimProfile(userId, playerName, input);
+      if (claimed?.ok) {
+        setIsClaimSuccessful(true);
+      } else {
+        setIsClaimSuccessful(true);
+      }
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
       {/* 1. Claim profile content */}
       {!isClaimSuccessful && (
         <section className="claim-profile-popup">
-          <span>
-            Log in to the game as {playerName} and enter your profile code
+          <h2 className="claim-profile-popup__title">Enter profile code</h2>
+          <span className="claim-profile-popup__description">
+            Log in to the game as {playerName} to find your profile code
           </span>
           <input
             className="profile-code__input"
@@ -32,22 +45,16 @@ export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
               setInput(e.target.value);
             }}
           ></input>
-          <button
-            className="profile-code__input__button"
-            onClick={async () => {
-              if (isAuthenticated && user) {
-                const userId = user.sub;
-                const claimed = await claimProfile(userId, playerName, input);
-                if (claimed?.ok) {
-                  setIsClaimSuccessful(true);
-                } else {
-                  setIsClaimSuccessful(true);
-                }
-              }
-            }}
-          >
-            Claim
-          </button>
+          <div className="claim-profile-popup__button-section">
+            <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
+            <PrimaryButton
+              onClick={() => {
+                handleClaim();
+              }}
+            >
+              Claim
+            </PrimaryButton>
+          </div>
         </section>
       )}
       {/* 2. Successful claim content */}
@@ -64,3 +71,21 @@ export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
     </Modal>
   );
 }
+
+const Button = styled.button`
+  border-radius: 5px;
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  border: none;
+  min-width: 6rem;
+`;
+
+const SecondaryButton = styled(Button)`
+  background-color: transparent;
+  color: #7b7b7b;
+  border: 1px solid #7b7b7b;
+`;
+const PrimaryButton = styled(Button)`
+  background-color: #f08119;
+  color: #050505;
+`;
