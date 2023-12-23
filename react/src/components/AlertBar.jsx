@@ -8,6 +8,7 @@ export default function AlertBar(props) {
     <>
       <section
         className={!popup ? "alert-bar" : "alert-bar_popup"}
+        // TODO alert bar should not be clickable
         onClick={() => {
           setPopupIsRevealed(true);
         }}

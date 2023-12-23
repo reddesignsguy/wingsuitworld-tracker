@@ -1,0 +1,21 @@
+.claim-profile-popup {
+  display: flex;
+  flex-direction: column;
+  row-gap: 1rem;
+}
+
+.claim-profile-popup__button-section {
+  display: flex;
+  justify-content: right;
+  margin-right: 0;
+  margin-left: auto;
+  column-gap: 1rem;
+}
+
+.claim-profile-popup__title {
+  margin: 0;
+}
+
+.claim-profile-popup__description {
+  color: #7b7b7b;
+}
