@@ -1,10 +1,17 @@
 import "./Settings.css";
 import { BiEditAlt, BiSolidUser } from "react-icons/bi";
 import { IoIosSettings, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
+import { getUserById, unclaimProfile, claimProfile } from "../../apis/apis";
 import usePlayername from "../../hooks/usePlayername";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useAuth0 } from "@auth0/auth0-react";
+import { QueryClient, useQuery } from "@tanstack/react-query";
+import ClaimProfilePopup from "../../components/ClaimProfileModal";
+import Modal from "../../components/Modal/Modal";
 
 const settings = ["Account Settings", "Player Management"];
+
+const queryClient = new QueryClient();
 
 export default function Settings(props) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -69,6 +76,15 @@ function AccountSettingsMenu(props) {
 
 function PlayerManagementMenu(props) {
   const playername = usePlayername();
+  const { user } = useAuth0();
+  const { data, status } = useQuery({
+    queryKey: ["userData"],
+    queryFn: () => {
+      console.log("refetching user data from api because it's not in cache");
+      return getUserById(user?.sub);
+    },
+  });
+
   return (
     <>
       <section className="settings__selected__menu__header">
@@ -88,7 +104,8 @@ function PlayerManagementMenu(props) {
           can only claim one profile at a time.
         </span>
       </section>
-      {playername ? <UnclaimSection /> : <ClaimSection />}
+
+      {data?.playerName ? <UnclaimSection /> : <ClaimSection />}
     </>
   );
 }
@@ -148,19 +165,76 @@ function SideBarItems(props) {
   );
 }
 
+// 512494
 function ClaimSection(props) {
+  const { isAuthenticated, user } = useAuth0();
+  const [inputPlayername, setInputPlayernameInput] = useState("");
+  const [claimProfileModalOpen, setClaimProfileModalOpen] = useState(false);
+
+  useEffect(() => {
+    console.log(claimProfileModalOpen);
+  }, [claimProfileModalOpen]);
+
+  // * abstracted this bc. children and the HTML don't need to know how react states are implemented
+  function openModal() {
+    setClaimProfileModalOpen(true);
+  }
+  function closeModal() {
+    setClaimProfileModalOpen(false);
+  }
+
   return (
     <>
       <input
         className="settings__selected__menu__input"
         placeholder={props.playername}
+        onChange={(e) => {
+          // @ts-ignore
+          setInputPlayernameInput(e.target.value);
+        }}
       ></input>
-      <button className="settings__selected__menu__button_long">Claim</button>
+      <button
+        className="settings__selected__menu__button_long"
+        onClick={async () => {
+          if (isAuthenticated) {
+            // todo: assert that the player is in datastore + exists
+            openModal();
+          }
+        }}
+      >
+        Claim
+      </button>
+      {claimProfileModalOpen && (
+        <ClaimProfilePopup
+          isOpen={claimProfileModalOpen}
+          playerName={inputPlayername}
+          onClose={closeModal}
+        />
+      )}
     </>
   );
 }
 
+// ! How to make a reusable button component with customizable PopUps?
+// function PopUpButton({ text, PopUpComponent }) {
+//   const [showPopUp, setShowPopUp] = useState(false);
+//   return (
+//     <>
+//       <button
+//         className="settings__selected__menu__button_long"
+//         onClick={async () => {
+//           setShowPopUp(true);
+//         }}
+//       >
+//         {text}
+//       </button>
+//       {showPopUp && <PopUpComponent />}
+//     </>
+//   );
+// }
+
 function UnclaimSection(props) {
+  const { isAuthenticated, user } = useAuth0();
   const playername = usePlayername();
 
   return (
@@ -169,7 +243,20 @@ function UnclaimSection(props) {
         className="settings__selected__menu__input_unselectable"
         placeholder={playername}
       ></input>
-      <button className="settings__selected__menu__button_long_alternate">
+      <button
+        className="settings__selected__menu__button_long_alternate"
+        onClick={async () => {
+          if (!isAuthenticated) {
+            return;
+          }
+          const unclaimed = user && unclaimProfile(user.sub);
+          if (unclaimed !== null) {
+            // todo please try again msg
+          } else {
+            queryClient.invalidateQueries({ queryKey: ["userData"] });
+          }
+        }}
+      >
         Unclaim
       </button>
     </>
