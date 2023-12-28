@@ -5,7 +5,6 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useAuth0 } from "@auth0/auth0-react";
 import AlertBar from "../../components/AlertBar";
-import ClaimProfilePopup from "../../components/ClaimProfilePopup";
 
 export default function PlayerPage(props) {
   const [[name, rank, img, topScore, totalScore, maps], setPlayer] = useState([
@@ -55,19 +54,7 @@ export default function PlayerPage(props) {
 
       // no one has claimed this profile
       if (profileOwner == null) {
-        setAlertBar(
-          <AlertBar
-            text="Claim this profile"
-            popup={
-              <ClaimProfilePopup
-                isAuthenticated={isAuthenticated}
-                userId={loggedInUserId}
-                playerName={playername}
-                setAlertBar={setAlertBar}
-              />
-            }
-          />
-        );
+        setAlertBar(<AlertBar text="Claim this profile" />);
       } else {
         // someone has claimed this profile
         setAlertBar(<AlertBar text="This profile is claimed" />);
@@ -210,6 +197,7 @@ async function claimProfile(userId, playerName, profileCode) {
   }
 }
 
+// todo decouple
 async function checkWhoClaimedProfile(playerName) {
   const data = {
     playerName: playerName,

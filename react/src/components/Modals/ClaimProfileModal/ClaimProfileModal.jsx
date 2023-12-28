@@ -1,18 +1,12 @@
-import styled from "styled-components";
 import { useAuth0 } from "@auth0/auth0-react";
 import "./ClaimProfileModal.css";
-import AlertBar from "./AlertBar";
-import Modal from "./Modal/Modal";
-import { SecondaryButton } from "./Buttons/SecondaryButton";
-import { PrimaryButton } from "./Buttons/PrimaryButton";
+import Modal from "../Modal";
+import { SecondaryButton } from "../../Buttons/SecondaryButton";
+import { PrimaryButton } from "../../Buttons/PrimaryButton";
 
 const { useState } = require("react");
-const { claimProfile } = require("../apis/apis");
+const { claimProfile } = require("../../../apis/apis");
 
-// ! PopUp is now decoupled from the App state
-// ! Now we need to find a way to close the popup -> is this managed by a state one level above?
-
-// ! isClosed() is called that way (not close()) to differentiate between local and parent state
 export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
   const { isAuthenticated, user } = useAuth0();
   const [input, setInput] = useState("");

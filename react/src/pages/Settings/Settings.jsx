@@ -6,8 +6,8 @@ import usePlayername from "../../hooks/usePlayername";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
-import ClaimProfilePopup from "../../components/ClaimProfileModal";
-import Modal from "../../components/Modal/Modal";
+import ClaimProfileModal from "../../components/Modals/ClaimProfileModal";
+import Modal from "../../components/Modals/Modal";
 
 const settings = ["Account Settings", "Player Management"];
 
@@ -205,7 +205,7 @@ function ClaimSection(props) {
         Claim
       </button>
       {claimProfileModalOpen && (
-        <ClaimProfilePopup
+        <ClaimProfileModal
           isOpen={claimProfileModalOpen}
           playerName={inputPlayername}
           onClose={closeModal}
