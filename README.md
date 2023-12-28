@@ -13,9 +13,18 @@
   ![Roblox](https://a11ybadges.com/badge?logo=roblox)
 # wingsuitworld-tracker
 
-System Design
+## Demo
+### 1. Video:
+[![Video Demo for Wingssuit World Tracker ](https://img.youtube.com/vi/NipLmFdQnpI/0.jpg)](https://www.youtube.com/watch?v=NipLmFdQnpI)
+### 2. Video Epilogue: Bar at top of page alerts you if you've claimed a profile already
+![Screenshot 2023-12-27 at 6 56 55 PM](https://github.com/reddesignsguy/wingsuitworld-tracker/assets/49921782/5188b8db-1725-47b9-93a0-443b55b4d721)
 
-<img width="919" alt="image" src="https://github.com/reddesignsguy/wingsuitworld-tracker/assets/49921782/6f2d50d7-8df9-438e-bb3c-8c38180049be">
+## System Design
+
+![image](https://github.com/reddesignsguy/wingsuitworld-tracker/assets/49921782/abf56a9b-1a14-41ad-ac5c-00cbb66a4838)
+
+
+## Notes:
 
 - mobile first
 - useReact
