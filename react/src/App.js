@@ -22,7 +22,8 @@ function App() {
   const location = useLocation();
 
   useEffect(() => {
-    // ! This logic should not be in front-end, use Auth0 Action workflow
+    // TODO This logic should not be in front-end, use Auth0 Action workflow!!!
+    // ! The reason this is here is because Auth0 requires a deployed backend (backend not deployed yet)
     async function addUserToDbIfDoesntExist() {
       if (isAuthenticated && user) {
         const userId = user?.sub;
@@ -65,7 +66,6 @@ function App() {
     addUserToDbIfDoesntExist();
   }, [isAuthenticated, location]);
   return (
-    // TODO wrap in React Provider
     <QueryClientProvider client={queryClient}>
       <div className="App">
         {AlertBar}
