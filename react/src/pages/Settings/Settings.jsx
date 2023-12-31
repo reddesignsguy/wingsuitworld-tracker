@@ -8,6 +8,8 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { QueryClient, useQuery } from "@tanstack/react-query";
 import ClaimProfileModal from "../../components/Modals/ClaimProfileModal";
 import Modal from "../../components/Modals/Modal";
+import { PrimaryButton } from "../../components/Buttons/PrimaryButton";
+import { TransparentSearchBar } from "../../components/TransparentSearchBar";
 
 const settings = ["Account Settings", "Player Management"];
 
@@ -77,14 +79,17 @@ function AccountSettingsMenu(props) {
 function PlayerManagementMenu(props) {
   const playername = usePlayername();
   const { user } = useAuth0();
-  const { data, status } = useQuery({
+  const { data, fetchStatus } = useQuery({
     queryKey: ["userData"],
     queryFn: () => {
       console.log("refetching user data from api because it's not in cache");
       return getUserById(user?.sub);
     },
   });
-
+  console.log("fetch status: ", fetchStatus);
+  if (fetchStatus === "fetching") {
+    return <span>Loading...</span>;
+  }
   return (
     <>
       <section className="settings__selected__menu__header">
@@ -167,7 +172,7 @@ function SideBarItems(props) {
 
 // 512494
 function ClaimSection(props) {
-  const { isAuthenticated, user } = useAuth0();
+  const { isAuthenticated } = useAuth0();
   const [inputPlayername, setInputPlayernameInput] = useState("");
   const [claimProfileModalOpen, setClaimProfileModalOpen] = useState(false);
 
@@ -185,16 +190,15 @@ function ClaimSection(props) {
 
   return (
     <>
-      <input
+      <TransparentSearchBar
         className="settings__selected__menu__input"
         placeholder={props.playername}
         onChange={(e) => {
           // @ts-ignore
           setInputPlayernameInput(e.target.value);
         }}
-      ></input>
-      <button
-        className="settings__selected__menu__button_long"
+      ></TransparentSearchBar>
+      <PrimaryButton
         onClick={async () => {
           if (isAuthenticated) {
             // todo: assert that the player is in datastore + exists
@@ -203,7 +207,7 @@ function ClaimSection(props) {
         }}
       >
         Claim
-      </button>
+      </PrimaryButton>
       {claimProfileModalOpen && (
         <ClaimProfileModal
           isOpen={claimProfileModalOpen}
@@ -249,11 +253,12 @@ function UnclaimSection(props) {
           if (!isAuthenticated) {
             return;
           }
-          const unclaimed = user && unclaimProfile(user.sub);
+          const unclaimed = user && (await unclaimProfile(user.sub));
           if (unclaimed !== null) {
             // todo please try again msg
           } else {
-            queryClient.invalidateQueries({ queryKey: ["userData"] });
+            // queryClient.invalidateQueries({ queryKey: ["userData"] });
+            queryClient.refetchQueries({ queryKey: ["userData"] });
           }
         }}
       >

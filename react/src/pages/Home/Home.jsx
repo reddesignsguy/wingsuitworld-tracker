@@ -5,6 +5,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 // @ts-ignore
 import background_video from "../../media/videos/background_video.mp4";
 import "./Home.css";
+import { SearchBar } from "../../components/SearchBar";
 
 export default function Home() {
   // Can only use react hooks within components/classes
@@ -29,8 +30,7 @@ export default function Home() {
             <i>FIND YOUR STATS </i>
           </h2>
           <section className="search_container">
-            <input
-              className="search_bar"
+            <SearchBar
               placeholder={"Enter a roblox name, eg: builderman"}
               onInput={(e) => {
                 // @ts-ignore
@@ -42,7 +42,7 @@ export default function Home() {
                   navigate(`/player/${input}`);
                 }
               }}
-            ></input>
+            ></SearchBar>
             {/* User clicks search button */}
             <NavLink to={`/player?${input}`}>
               <IoSearchSharp className="search_button"></IoSearchSharp>
