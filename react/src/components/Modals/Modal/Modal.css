@@ -35,7 +35,8 @@
   justify-content: center;
   cursor: pointer;
   transition: all ease 0.1s;
-  background-color: #313131;
+  background-color: transparent;
+  border: solid 2px #313131;
   border-radius: 5px;
   margin-left: auto;
   margin-right: 0;
@@ -43,11 +44,16 @@
 }
 
 .modal__close-btn:hover {
-  background-color: #525252;
+  background-color: #a0a0a0;
+  color: #212121;
 }
 
 .modal__close-btn_icon {
-  color: var(--bright);
+  color: #a0a0a0;
   width: 90%;
   height: 90%;
+}
+
+.modal__close-btn_icon:hover {
+  color: #313131;
 }

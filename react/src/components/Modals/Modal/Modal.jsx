@@ -35,15 +35,21 @@ export default function Modal({ isOpen, onClose, children }) {
   // * In effect, the modal stays in the component tree, however, its visibility is determined by HTML modal API
   return (
     <dialog ref={modalRef} className="modal">
-      <div
-        className="modal__close-btn"
-        onClick={() => {
-          closeModal();
-        }}
-      >
-        <IoClose className="modal__close-btn_icon" />
-      </div>
+      <ModalCloseButton closeModal={closeModal} />
       {children}
     </dialog>
   );
 }
+
+const ModalCloseButton = ({ closeModal }) => {
+  return (
+    <div
+      className="modal__close-btn"
+      onClick={() => {
+        closeModal();
+      }}
+    >
+      <IoClose className="modal__close-btn_icon" />
+    </div>
+  );
+};
