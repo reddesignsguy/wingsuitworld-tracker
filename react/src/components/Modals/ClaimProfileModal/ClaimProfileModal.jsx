@@ -45,9 +45,9 @@ export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
           <span className="claim-profile-popup__description">
             1. Log in to the game as <b>{playerName}</b>
             <br />
-            2. Click "Settings"
+            2. Click <b>Settings</b>
             <br />
-            3. Press "Reveal 6-digit profile code"
+            3. Press <b>Reveal 6-digit profile code</b>
           </span>
           <TransparentSearchBar
             className="profile-code__input"
