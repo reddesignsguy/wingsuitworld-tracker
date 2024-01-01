@@ -7,10 +7,11 @@ import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useQueryClient } from "@tanstack/react-query";
 import ClaimProfileModal from "../../components/Modals/ClaimProfileModal";
-import Modal from "../../components/Modals/Modal";
 import { PrimaryButton } from "../../components/Buttons/PrimaryButton";
 import { TransparentSearchBar } from "../../components/TransparentSearchBar";
 import { WarningText } from "../../components/Warning";
+import { SecondaryDangerButton } from "../../components/Buttons/SecondaryDangerButton";
+import UnclaimProfileModal from "./components/UnclaimProfileModal";
 
 const settings = ["Account Settings", "Player Management"];
 
@@ -159,6 +160,8 @@ function ClaimingSectionHandler(props) {
   const { playername } = usePlayername();
   const [inputPlayername, setInputPlayernameInput] = useState("");
   const [claimModalOpen, setClaimModalOpen] = useState(false);
+  const [disconnectModalOpen, setDisconnectModalOpen] = useState(false);
+  const [unclaimWarning, setUnclaimWarning] = useState(null);
   // const [unclaimModalOpen, setUnclaimModalOpen] = useState(false);
 
   // * abstracted this bc. children and the HTML don't need to know how react states are implemented
@@ -170,10 +173,21 @@ function ClaimingSectionHandler(props) {
     setClaimModalOpen(false);
   };
 
+  const openDisconnectModal = () => {
+    setDisconnectModalOpen(true);
+  };
+
+  const closeDisconnectModal = () => {
+    setDisconnectModalOpen(false);
+  };
+
   return (
     <>
       {playername ? (
-        <UnclaimSection />
+        <UnclaimSection
+          openModal={openDisconnectModal}
+          warning={unclaimWarning}
+        />
       ) : (
         <ClaimSection
           openModal={openClaimModal}
@@ -187,6 +201,14 @@ function ClaimingSectionHandler(props) {
           isOpen={claimModalOpen}
           playerName={inputPlayername}
           onClose={closeClaimModal}
+        />
+      )}
+
+      {disconnectModalOpen && (
+        <UnclaimProfileModal
+          isOpen={disconnectModalOpen}
+          setWarning={setUnclaimWarning}
+          onClose={closeDisconnectModal}
         />
       )}
     </>
@@ -233,55 +255,24 @@ function ClaimSection({ openModal, setInput, input }) {
   );
 }
 
-// ! How to make a reusable button component with customizable PopUps?
-// function PopUpButton({ text, PopUpComponent }) {
-//   const [showPopUp, setShowPopUp] = useState(false);
-//   return (
-//     <>
-//       <button
-//         className="settings__selected__menu__button_long"
-//         onClick={async () => {
-//           setShowPopUp(true);
-//         }}
-//       >
-//         {text}
-//       </button>
-//       {showPopUp && <PopUpComponent />}
-//     </>
-//   );
-// }
-
-function UnclaimSection(props) {
-  const { isAuthenticated, user } = useAuth0();
+function UnclaimSection({ openModal, warning }) {
   const { playername } = usePlayername();
-  const queryClient = useQueryClient();
 
   return (
     <>
       <input
         className="settings__selected__menu__input_unselectable"
         placeholder={playername}
-      ></input>
-      <button
+      />
+      {warning && <WarningText>{warning}</WarningText>}
+      <SecondaryDangerButton
         className="settings__selected__menu__button_long_alternate"
-        onClick={async () => {
-          if (!isAuthenticated) {
-            return;
-          }
-
-          // todo replace with mutation
-          const unclaimed = user && (await unclaimProfile(user.sub));
-          if (unclaimed == null) {
-            console.log("unclaim failed");
-            // todo please try again msg
-          } else {
-            console.log("unclaim succeeded");
-            queryClient.invalidateQueries({ queryKey: ["userData"] });
-          }
+        onClick={() => {
+          openModal();
         }}
       >
         Unclaim
-      </button>
+      </SecondaryDangerButton>
     </>
   );
 }
