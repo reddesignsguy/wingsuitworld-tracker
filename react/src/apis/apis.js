@@ -1,4 +1,18 @@
 // api.com/profile
+exports.getProfile = async function (playername) {
+  const res = await fetch(`http://localhost:5051/profile/${playername}`);
+  // TODO: 1. Handle no player found
+  // TODO: 3. Handle loading state (there's probably a standardized way of doing this)
+  console.log(res);
+  if (res.ok) {
+    return res.json().then((data) => {
+      return data;
+    });
+  } else {
+    return null;
+  }
+};
+
 exports.claimProfile = async function (userId, playerName, profileCode) {
   const data = {
     userId: userId,
