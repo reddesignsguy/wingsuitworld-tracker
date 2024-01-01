@@ -12,11 +12,21 @@ export default function UnclaimProfileModal({ isOpen, onClose, setWarning }) {
   const queryClient = useQueryClient();
   const disconnectMutation = useMutation({
     mutationFn: async (userId) => {
-      console.log(userId);
       const result = await unclaimProfile(userId);
       if (result == null) {
         throw new Error("Unsuccessful profile disconnection");
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userData"] });
+      onClose();
+    },
+    onError: (err) => {
+      setWarning(
+        `Failed to disconnect account from ${playername}'s profile. Please try again`
+      );
+      console.log(err);
+      onClose();
     },
   });
 
@@ -30,16 +40,7 @@ export default function UnclaimProfileModal({ isOpen, onClose, setWarning }) {
     try {
       // @ts-ignore
       const result = await disconnectMutation.mutateAsync(userId);
-
-      queryClient.invalidateQueries({ queryKey: ["userData"] });
-      onClose();
-    } catch (err) {
-      setWarning(
-        `Failed to disconnect account from ${playername}'s profile. Please try again`
-      );
-      console.log(err);
-      onClose();
-    }
+    } catch (err) {}
   };
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
