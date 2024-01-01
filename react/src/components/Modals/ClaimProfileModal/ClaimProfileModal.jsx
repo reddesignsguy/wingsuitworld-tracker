@@ -23,27 +23,33 @@ export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
 
   const queryClient = useQueryClient();
   const claimMutation = useMutation({
-    mutationFn: async () => {
-      if (isAuthenticated && user) {
-        // @ts-ignore
-        const result = await claimProfile(user?.sub, playerName, input);
-        // TODO: alert onSuccess callback if this is successful (we dont know if returning true is how it's done)
-        if (result == null) {
-          throw new Error("Unsuccessful claiming");
-        }
+    mutationFn: async (userId) => {
+      // @ts-ignore
+      const result = await claimProfile(userId, playerName, input);
+      if (result == null) {
+        throw new Error("Unsuccessful claiming");
       }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["userData"] });
+      setIsClaimSuccessful(true);
+    },
+    onError: (err) => {
+      setShowWarning(true);
     },
   });
 
   const handleClaim = async () => {
-    // @ts-ignore
-    try {
-      const res = await claimMutation.mutateAsync();
-      queryClient.invalidateQueries({ queryKey: ["userData"] });
-      setIsClaimSuccessful(true);
-    } catch (err) {
-      setShowWarning(true);
+    if (!isAuthenticated || !user) {
+      return;
     }
+
+    const userId = user.sub;
+
+    try {
+      // @ts-ignore
+      const res = await claimMutation.mutateAsync(userId);
+    } catch (err) {}
   };
 
   return (
