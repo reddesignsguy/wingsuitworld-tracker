@@ -1,7 +1,12 @@
 import "./Settings.css";
 import { BiEditAlt, BiSolidUser } from "react-icons/bi";
 import { IoIosSettings, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-import { getUserById, unclaimProfile, claimProfile } from "../../apis/apis";
+import {
+  getUserById,
+  unclaimProfile,
+  claimProfile,
+  getProfile,
+} from "../../apis/apis";
 import usePlayername from "../../hooks/usePlayername";
 import { useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
@@ -10,6 +15,7 @@ import ClaimProfileModal from "../../components/Modals/ClaimProfileModal";
 import Modal from "../../components/Modals/Modal";
 import { PrimaryButton } from "../../components/Buttons/PrimaryButton";
 import { TransparentSearchBar } from "../../components/TransparentSearchBar";
+import { WarningText } from "../../components/Warning";
 
 const settings = ["Account Settings", "Player Management"];
 
@@ -171,10 +177,13 @@ function SideBarItems(props) {
 }
 
 // 512494
+const warning =
+  "The player you entered has not played the game yet or does not exist on ROBLOX";
 function ClaimSection(props) {
   const { isAuthenticated } = useAuth0();
   const [inputPlayername, setInputPlayernameInput] = useState("");
   const [claimProfileModalOpen, setClaimProfileModalOpen] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
 
   useEffect(() => {
     console.log(claimProfileModalOpen);
@@ -198,12 +207,21 @@ function ClaimSection(props) {
           setInputPlayernameInput(e.target.value);
         }}
       ></TransparentSearchBar>
+      {showWarning && <WarningText>{warning}</WarningText>}
       <PrimaryButton
         onClick={async () => {
-          if (isAuthenticated) {
-            // todo: assert that the player is in datastore + exists
-            openModal();
+          if (!isAuthenticated) {
+            return;
           }
+
+          // todo: assert that the player is in datastore + exists
+          const profileExists = await getProfile(inputPlayername);
+          if (profileExists == null) {
+            setShowWarning(true);
+            return;
+          }
+          setShowWarning(false);
+          openModal();
         }}
       >
         Claim
