@@ -1,16 +1,11 @@
 import "./Settings.css";
 import { BiEditAlt, BiSolidUser } from "react-icons/bi";
 import { IoIosSettings, IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
-import {
-  getUserById,
-  unclaimProfile,
-  claimProfile,
-  getProfile,
-} from "../../apis/apis";
+import { unclaimProfile, getProfile } from "../../apis/apis";
 import usePlayername from "../../hooks/usePlayername";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { QueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import ClaimProfileModal from "../../components/Modals/ClaimProfileModal";
 import Modal from "../../components/Modals/Modal";
 import { PrimaryButton } from "../../components/Buttons/PrimaryButton";
@@ -18,8 +13,6 @@ import { TransparentSearchBar } from "../../components/TransparentSearchBar";
 import { WarningText } from "../../components/Warning";
 
 const settings = ["Account Settings", "Player Management"];
-
-const queryClient = new QueryClient();
 
 export default function Settings(props) {
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
@@ -83,19 +76,6 @@ function AccountSettingsMenu(props) {
 }
 
 function PlayerManagementMenu(props) {
-  const playername = usePlayername();
-  const { user } = useAuth0();
-  const { data, fetchStatus } = useQuery({
-    queryKey: ["userData"],
-    queryFn: () => {
-      console.log("refetching user data from api because it's not in cache");
-      return getUserById(user?.sub);
-    },
-  });
-  console.log("fetch status: ", fetchStatus);
-  if (fetchStatus === "fetching") {
-    return <span>Loading...</span>;
-  }
   return (
     <>
       <section className="settings__selected__menu__header">
@@ -115,8 +95,7 @@ function PlayerManagementMenu(props) {
           can only claim one profile at a time.
         </span>
       </section>
-
-      {data?.playerName ? <UnclaimSection /> : <ClaimSection />}
+      <ClaimingSectionHandler />
     </>
   );
 }
@@ -176,35 +155,59 @@ function SideBarItems(props) {
   );
 }
 
+function ClaimingSectionHandler(props) {
+  const { playername } = usePlayername();
+  const [inputPlayername, setInputPlayernameInput] = useState("");
+  const [claimModalOpen, setClaimModalOpen] = useState(false);
+  // const [unclaimModalOpen, setUnclaimModalOpen] = useState(false);
+
+  // * abstracted this bc. children and the HTML don't need to know how react states are implemented
+  const openClaimModal = () => {
+    setClaimModalOpen(true);
+  };
+
+  const closeClaimModal = () => {
+    setClaimModalOpen(false);
+  };
+
+  return (
+    <>
+      {playername ? (
+        <UnclaimSection />
+      ) : (
+        <ClaimSection
+          openModal={openClaimModal}
+          setInput={setInputPlayernameInput}
+          input={inputPlayername}
+        />
+      )}
+
+      {claimModalOpen && (
+        <ClaimProfileModal
+          isOpen={claimModalOpen}
+          playerName={inputPlayername}
+          onClose={closeClaimModal}
+        />
+      )}
+    </>
+  );
+}
+
 // 512494
 const warning =
   "The player you entered has not played the game yet or does not exist on ROBLOX";
-function ClaimSection(props) {
+function ClaimSection({ openModal, setInput, input }) {
   const { isAuthenticated } = useAuth0();
-  const [inputPlayername, setInputPlayernameInput] = useState("");
-  const [claimProfileModalOpen, setClaimProfileModalOpen] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
-
-  useEffect(() => {
-    console.log(claimProfileModalOpen);
-  }, [claimProfileModalOpen]);
-
-  // * abstracted this bc. children and the HTML don't need to know how react states are implemented
-  function openModal() {
-    setClaimProfileModalOpen(true);
-  }
-  function closeModal() {
-    setClaimProfileModalOpen(false);
-  }
 
   return (
     <>
       <TransparentSearchBar
         className="settings__selected__menu__input"
-        placeholder={props.playername}
+        placeholder={"eg: builderman"}
         onChange={(e) => {
           // @ts-ignore
-          setInputPlayernameInput(e.target.value);
+          setInput(e.target.value);
         }}
       ></TransparentSearchBar>
       {showWarning && <WarningText>{warning}</WarningText>}
@@ -215,7 +218,7 @@ function ClaimSection(props) {
           }
 
           // todo: assert that the player is in datastore + exists
-          const profileExists = await getProfile(inputPlayername);
+          const profileExists = await getProfile(input);
           if (profileExists == null) {
             setShowWarning(true);
             return;
@@ -226,13 +229,6 @@ function ClaimSection(props) {
       >
         Claim
       </PrimaryButton>
-      {claimProfileModalOpen && (
-        <ClaimProfileModal
-          isOpen={claimProfileModalOpen}
-          playerName={inputPlayername}
-          onClose={closeModal}
-        />
-      )}
     </>
   );
 }
@@ -257,7 +253,8 @@ function ClaimSection(props) {
 
 function UnclaimSection(props) {
   const { isAuthenticated, user } = useAuth0();
-  const playername = usePlayername();
+  const { playername } = usePlayername();
+  const queryClient = useQueryClient();
 
   return (
     <>
@@ -271,12 +268,15 @@ function UnclaimSection(props) {
           if (!isAuthenticated) {
             return;
           }
+
+          // todo replace with mutation
           const unclaimed = user && (await unclaimProfile(user.sub));
-          if (unclaimed !== null) {
+          if (unclaimed == null) {
+            console.log("unclaim failed");
             // todo please try again msg
           } else {
-            // queryClient.invalidateQueries({ queryKey: ["userData"] });
-            queryClient.refetchQueries({ queryKey: ["userData"] });
+            console.log("unclaim succeeded");
+            queryClient.invalidateQueries({ queryKey: ["userData"] });
           }
         }}
       >
