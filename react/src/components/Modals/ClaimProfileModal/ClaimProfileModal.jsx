@@ -3,44 +3,48 @@ import "./ClaimProfileModal.css";
 import Modal from "../Modal";
 import { IoCheckmarkCircle } from "react-icons/io5";
 import { SecondaryButton } from "../../Buttons/SecondaryButton";
-import { PrimaryButton } from "../../Buttons/PrimaryButton";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { SuperPrimaryButton } from "../../Buttons/SuperPrimaryButton";
 // @ts-ignore
-import { SearchBar } from "../../SearchBar";
 import { TransparentSearchBar } from "../../TransparentSearchBar";
 import styled from "styled-components";
 import { AlternatePrimaryButton } from "../../Buttons/AlternatePrimaryButton";
+import { WarningText } from "../../Warning";
 
 const { useState } = require("react");
 const { claimProfile } = require("../../../apis/apis");
 
-const queryClient = new QueryClient();
-
+const warning = "Incorrect profile code. Please try again";
 export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
   const { isAuthenticated, user } = useAuth0();
   const [input, setInput] = useState("");
   const [isClaimSuccessful, setIsClaimSuccessful] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+
+  const queryClient = useQueryClient();
   const claimMutation = useMutation({
     mutationFn: async () => {
       if (isAuthenticated && user) {
         // @ts-ignore
         const result = await claimProfile(user?.sub, playerName, input);
         // TODO: alert onSuccess callback if this is successful (we dont know if returning true is how it's done)
-        return true;
-      } else {
-        return false;
+        if (result == null) {
+          throw new Error("Unsuccessful claiming");
+        }
       }
     },
-    // @ts-ignore
-    onSuccess: (data, variables, context) => {
-      console.log(
-        "successfully mutated server data, now i should be invalidating the cache"
-      );
-      setIsClaimSuccessful(true);
-      queryClient.refetchQueries({ queryKey: ["userData"] });
-    },
   });
+
+  const handleClaim = async () => {
+    // @ts-ignore
+    try {
+      const res = await claimMutation.mutateAsync();
+      queryClient.invalidateQueries({ queryKey: ["userData"] });
+      setIsClaimSuccessful(true);
+    } catch (err) {
+      setShowWarning(true);
+    }
+  };
 
   return (
     <Modal isOpen={isOpen} onClose={onClose}>
@@ -68,16 +72,10 @@ export default function ClaimProfileModal({ isOpen, playerName, onClose }) {
               setInput(e.target.value);
             }}
           ></TransparentSearchBar>
+          {showWarning && <WarningText>{warning}</WarningText>}
           <div className="claim-profile-popup__button-section">
             <SecondaryButton onClick={() => onClose()}>Cancel</SecondaryButton>
-            <SuperPrimaryButton
-              onClick={async () => {
-                // @ts-ignore
-                const res = await claimMutation.mutateAsync();
-              }}
-            >
-              Claim
-            </SuperPrimaryButton>
+            <SuperPrimaryButton onClick={handleClaim}>Claim</SuperPrimaryButton>
           </div>
         </section>
       )}
